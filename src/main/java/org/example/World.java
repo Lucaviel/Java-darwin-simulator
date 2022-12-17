@@ -1,12 +1,11 @@
 package org.example;
 
-import java.sql.SQLOutput;
+import java.util.Random;
 
 public class World {
-
     public static void main(String[] args) {
-        Animal gen = new Animal();
-        gen.changeOrientation();
-        System.out.println(gen.orientation);
+//        Animal gen = new Animal();
+//        gen.changeOrientation();
+//        System.out.println(gen.orientation);
     }
 }
