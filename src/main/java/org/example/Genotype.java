@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Genotype extends Simulator{
-    private ArrayList<Integer> GeneArr;
+    private ArrayList<Integer> GeneArr = new ArrayList<>();
     private final Random generator = new Random();
 
 
@@ -13,7 +13,7 @@ public class Genotype extends Simulator{
             this.GeneArr.add(generator.nextInt(GENE_LENGTH));
     }
 
-    public Genotype(int nGenes, Animal parent1, Animal parent2){
+    public Genotype(Animal parent1, Animal parent2){
         this.GeneArr = afterParentsGenotype(parent1, parent2);
     }
 

@@ -22,13 +22,13 @@ public class Animal extends Simulator{
         this.currentGene = 0;
     }
 
-    public Animal(Vector2d initialPosition, Animal parent1, Animal parent2, IWorldMap map, int birthdate){
+    public Animal(Animal parent1, Animal parent2){
         this.orientation = MapDirection.NORTH;
         this.days = 0;
         this.children = 0;
         this.position = parent1.getPosition();
         this.energy = parent1.getEnergy() / 4 + parent2.getEnergy() / 4;
-        this.gene = new Genotype(GENE_LENGTH, parent1, parent2);
+        this.gene = new Genotype(parent1, parent2);
         this.currentGene = 0;
     }
 
@@ -36,6 +36,7 @@ public class Animal extends Simulator{
         int n = gene.getCurrentGenotype(this.currentGene);
         for(int i=0; i<n; i++)
             this.orientation = this.orientation.next();
+        this.energy = this.energy - 2;
         move();
     }
 
