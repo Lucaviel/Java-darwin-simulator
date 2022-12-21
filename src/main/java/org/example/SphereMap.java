@@ -1,14 +1,32 @@
 package org.example;
 
-public class SphereMap {
-    protected static final int HEIGHT = 10;
-    protected static final int WEIGHT = 10;
+public class SphereMap extends AbstractWorld{
+    public SphereMap(int width, int height) {
+        super(width, height);
+    }
+    public void moveTo(Animal pet) {
+        if (pet.position.x > width)
+            pet.position = new Vector2d(0, pet.position.y);
+        if (pet.position.x < 0)
+            pet.position = new Vector2d(width, pet.position.y);
+        if (pet.position.y < 0 || pet.position.y > height) {
+            pet.position = pet.position.subtract(pet.orientation.toUnitVector());
+            pet.changeOrientation(4);
+        }
+    }
 
-    public Vector2d moveTo(Vector2d position) {
-        if (position.x >= WEIGHT) return new Vector2d(0, position.y);
-        if (position.y >= HEIGHT) return new Vector2d(position.x, HEIGHT);
-        if (position.x < 0) return new Vector2d(WEIGHT, position.y);
-        if (position.y < 0) return new Vector2d(position.x, 0);
-        return new Vector2d(position.x, position.y);
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public boolean isOccupied(Vector2d position) {
+        return false;
     }
 }

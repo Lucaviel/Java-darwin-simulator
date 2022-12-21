@@ -5,12 +5,14 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class ReadFile {
-    public HashMap<String, String> getParameterHashMap() {
 
-        File f = new File("C:\\Users\\marty\\Java\\javaProject\\teksty.txt");
+    public static HashMap<String, String> getParametersFromFile() {
+
+        File f = new File("./parametry.txt");
         Scanner read = null;
         try {
             read = new Scanner(f);
@@ -23,13 +25,13 @@ public class ReadFile {
         while (read.hasNext()) {
             String line = read.nextLine();
 
-//            List<String> read_line = List.of(line.split("="));
-//            String ParameterName = read_line.get(0);
-//            String ParameterValue = read_line.get(1);
+            java.util.List<String> read_line = List.of(line.split("="));
+            String ParameterName = read_line.get(0);
+            String ParameterValue = read_line.get(1);
 
-//            Parameters.put(ParameterName, ParameterValue);
+            Parameters.put(ParameterName, ParameterValue);
         }
-
         return Parameters;
     }
+
 }

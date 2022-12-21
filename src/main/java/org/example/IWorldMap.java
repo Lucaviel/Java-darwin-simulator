@@ -15,7 +15,6 @@ public interface IWorldMap {
      *            The position checked for the movement possibility.
      * @return True if the object can move to that position.
      */
-    boolean canMoveTo(Vector2d position);
 
     /**
      * Place a animal on the map.
@@ -45,4 +44,9 @@ public interface IWorldMap {
      * @return Object or null if the position is not occupied.
      */
     Object objectAt(Vector2d position);
+
+    void moveTo(Animal pet);
+    int getWidth();
+    int getHeight();
+
 }

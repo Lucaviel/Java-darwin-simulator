@@ -1,12 +1,11 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class Genotype extends Simulator{
     private ArrayList<Integer> GeneArr = new ArrayList<>();
     private final Random generator = new Random();
-
 
     public Genotype(int nGenes){
         for(int i = 0; i < nGenes; i++)
@@ -31,7 +30,7 @@ public class Genotype extends Simulator{
 
     public ArrayList<Integer> calculateGenotype(Animal parent1, Animal parent2, double sumEnergy){
         ArrayList<Integer> newGenArr = new ArrayList<>();
-        int p = (int) ((double) parent1.getEnergy() / sumEnergy * GENE_LENGTH );
+        int p = (int) ((double) parent1.getEnergy() / sumEnergy * GENE_LENGTH);
         for (int i = 0; i < GENE_LENGTH ; i++) {
             if (i < p) {
                 newGenArr.add(parent1.getGenotype().get(i));
@@ -40,6 +39,30 @@ public class Genotype extends Simulator{
             }
         }
         return newGenArr;
+    }
+
+    public ArrayList<Integer> mutateGenotype(ArrayList<Integer> genotypeArray){
+
+        Random r1 = new Random();
+        List<Integer> rangeList = IntStream.rangeClosed(0, GENE_LENGTH-1)
+                .boxed().toList(); // lista indexów długości genomu
+        int numToMutate = r1.nextInt(0, GENE_LENGTH + 1); // ranodmowa liczba genów do mutacji
+
+        // get random subset of size numToMutate
+        List<Integer> rangeLinkedList = new LinkedList<Integer>(rangeList);
+        Collections.shuffle(rangeLinkedList);
+        Set<Integer> indexesToMutate = new HashSet<Integer>(rangeLinkedList.subList(0, numToMutate));
+
+        Iterator<Integer> indexesIterator = indexesToMutate.iterator();
+
+        while(indexesIterator.hasNext()) {
+            Integer indexToMutate = indexesIterator.next();
+            Random r2 = new Random();
+            int newGene = r2.nextInt(0, GENE_LENGTH);
+            genotypeArray.set(indexToMutate, newGene);
+        }
+
+        return genotypeArray;
     }
 
     public ArrayList<Integer> afterParentsGenotype(Animal parent1, Animal parent2){   //dziedziczenie genotypu po rodzicach
@@ -73,6 +96,7 @@ public class Genotype extends Simulator{
                 newGenArr.add(parent2.getGenotype().get(i));
             }
         }
-        return newGenArr;
+
+        return mutateGenotype(newGenArr); //pelna losowosc
     }
 }

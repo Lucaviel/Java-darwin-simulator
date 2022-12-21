@@ -1,15 +1,23 @@
 package org.example;
 
-import java.util.Random;
-
 public class World {
+
     public static void main(String[] args) {
-        Animal pet1 = new Animal();
-        Animal pet2 = new Animal();
+
+        SphereMap map = new SphereMap(10, 10);
+        Animal pet1 = new Animal(map, new Vector2d(2, 10));
+        Animal pet2 = new Animal(map, new Vector2d(0, 5));
+        System.out.println(pet2.position);
+        System.out.println(pet2.orientation);
         System.out.println(pet1.getGenotype());
         System.out.println(pet2.getGenotype());
-        pet1.changeOrientation();
-        Animal pet3 = new Animal(pet1, pet2);
+        pet2.changeOrientation(pet1.gene.getCurrentGenotype(pet1.currentGene));
+        pet2.move();
+        System.out.println(pet2.position);
+        System.out.println(pet2.orientation);
+        Animal pet3 = new Animal(map, pet1, pet2);
         System.out.println(pet3.getGenotype());
+        System.out.println(pet3.getGenotypeInt());
+
     }
 }
