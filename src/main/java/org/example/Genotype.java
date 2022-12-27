@@ -3,8 +3,9 @@ package org.example;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class Genotype extends Simulator{
+public class Genotype{
     private ArrayList<Integer> GeneArr = new ArrayList<>();
+    protected static int GENE_LENGTH = 8;
     private final Random generator = new Random();
 
     public Genotype(int nGenes){

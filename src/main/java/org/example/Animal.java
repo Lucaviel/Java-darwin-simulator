@@ -1,8 +1,9 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Animal extends Simulator{
+public class Animal{
     protected int energy;
     protected MapDirection orientation;
     protected int days;
@@ -10,7 +11,9 @@ public class Animal extends Simulator{
     protected Genotype gene;
     protected Vector2d position;
     protected int currentGene;
+    protected static int GENE_LENGTH = 8;
     IWorldMap map;
+    private List<IPositionObserver> observers = new ArrayList<>();
 
 
     public Animal(IWorldMap map, Vector2d randomPosition){
@@ -36,10 +39,8 @@ public class Animal extends Simulator{
     }
 
     public void changeOrientation(int n){
-//        int n = gene.getCurrentGenotype(this.currentGene);
         for(int i=0; i<n; i++)
             this.orientation = this.orientation.next();
-        this.changeEnergy(-2);
     }
 
     public void move() {
@@ -48,6 +49,7 @@ public class Animal extends Simulator{
         if (this.currentGene == GENE_LENGTH-1)
             this.currentGene = 0;
         else this.currentGene++;
+        this.changeEnergy(-2);
     }
 
     public String toString() {
@@ -67,18 +69,15 @@ public class Animal extends Simulator{
         return gene.getGenotype();
     }
 
-    public Integer getGenotypeInt()
-    {
-        ArrayList<Integer> g = getGenotype();
-        String gString = "";
-        for(int i = 0; i < g.size(); i++){
-            gString = gString + g.get(i).toString();
-        }
-        return Integer.valueOf(gString);
-    }
-
     public int getEnergy(){
         return this.energy;
+    }
+
+    public void changeDays(){
+        this.days++;
+    }
+    public void changeChildren(){
+        this.children++;
     }
 
     public boolean isEnergyMoreThan(int n)
@@ -105,5 +104,21 @@ public class Animal extends Simulator{
 
     public Vector2d getPosition(){
         return this.position;
+    }
+
+    public String Visualize() {
+        return "src/main/resources/shrek.png";
+    }
+
+    public void addObserver(IPositionObserver observer){
+        observers.add(observer);
+    }
+
+    public void removeObserver(IPositionObserver observer){
+        this.observers.remove(observer);
+    }
+
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
+        for (IPositionObserver observer : observers) observer.positionChanged(this,oldPosition, newPosition);
     }
 }

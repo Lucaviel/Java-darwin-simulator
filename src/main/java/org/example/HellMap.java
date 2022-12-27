@@ -16,9 +16,7 @@ public class HellMap extends AbstractWorld{
         int x_r = r1.nextInt(0, width);
         int y_r = r2.nextInt(0, height);
 
-        Vector2d randomPosition = new Vector2d(x_r, y_r);
-
-        return randomPosition;
+        return new Vector2d(x_r, y_r);
     }
 
     public void moveTo(Animal pet) {
@@ -27,20 +25,5 @@ public class HellMap extends AbstractWorld{
             pet.position = generateRandomPosition();
             pet.changeEnergy(-2);
         }
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public boolean isOccupied(Vector2d position) {
-        return false;
     }
 }

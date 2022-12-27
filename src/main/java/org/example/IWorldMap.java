@@ -1,5 +1,8 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
@@ -48,5 +51,12 @@ public interface IWorldMap {
     void moveTo(Animal pet);
     int getWidth();
     int getHeight();
+
+    boolean delete(Animal animal);
+
+    Map<Vector2d, ArrayList<Animal>> getAnimals();
+    Map<Vector2d, Grass> getGrasses();
+    void removeGrass(Vector2d position);
+    boolean isOccupiedByGrass(Vector2d position);
 
 }

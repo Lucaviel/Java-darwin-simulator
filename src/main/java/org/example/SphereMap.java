@@ -14,19 +14,4 @@ public class SphereMap extends AbstractWorld{
             pet.changeOrientation(4);
         }
     }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public boolean isOccupied(Vector2d position) {
-        return false;
-    }
 }
