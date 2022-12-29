@@ -4,9 +4,15 @@ public class World {
 
     public static void main(String[] args) {
 
-//        SphereWorld map = new SphereWorld(10, 10);
-//        Animal pet1 = new Animal(map, new Vector2d(2, 10));
-//        Animal pet2 = new Animal(map, new Vector2d(0, 5));
+       // IWorldMap map = new SphereWorld(5, 5);
+        IWorldMap map = new SphereWorld(10, 10);
+        Animal pet1 = new Animal(map, new Vector2d(0, 0), 10, 8);
+        Animal pet2 = new Animal(map, new Vector2d(1, 0), 20, 8);
+        IEngine bla = new Simulator(map, 0, 6, 10, 8, -2,
+                5, 2, 6);
+
+        System.out.println(map.getAnimals());
+
 //        System.out.println(pet2.position);
 //        System.out.println(pet2.orientation);
 //        System.out.println(pet1.getGenotype());
@@ -15,13 +21,21 @@ public class World {
 //        pet2.move();
 //        System.out.println(pet2.position);
 //        System.out.println(pet2.orientation);
-//        Animal pet3 = new Animal(map, pet1, pet2);
 //        System.out.println(pet3.getGenotype());
 
-        IWorldMap map = new SphereWorld(6, 6);
-        IEngine bla = new Simulator(map, 2, 20, 10, 8, 2,
-                5, 0, 2);
-        System.out.println(bla);
+        bla.addSpecificAnimal(pet1);
+        bla.addSpecificAnimal(pet2);
+        System.out.println(map.getAnimals());
+
+//        pet1.changeEnergy(-100);
+//        pet2.changeEnergy(-200);
+
+        bla.run();
+        System.out.println(map.getAnimals());
+       // Animal child = new Animal(map, pet1, pet2, 8);
+
+
+
 
     }
 }

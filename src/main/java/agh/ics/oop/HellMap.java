@@ -23,7 +23,7 @@ public class HellMap extends AbstractWorldMap{
     }
 
     public void moveTo(Animal pet) {
-        if (pet.position.x > width || pet.position.x < 0 || pet.position.y < 0 || pet.position.y > height)
+        if (pet.position.x >= width || pet.position.x < 0 || pet.position.y < 0 || pet.position.y >= height)
         {
             pet.position = generateRandomPosition();
             pet.changeEnergy(this.teleportEnergy);

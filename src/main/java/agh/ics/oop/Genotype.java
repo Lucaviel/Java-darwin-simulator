@@ -15,8 +15,9 @@ public class Genotype{
             this.GeneArr.add(generator.nextInt(numDirections));
     }
 
-    public Genotype(Animal parent1, Animal parent2, int minMutate, int maxMutate){
-        this.GeneArr = afterParentsGenotype(parent1, parent2, minMutate, maxMutate);
+    public Genotype(Animal parent1, Animal parent2, int maxMutate){
+        this.geneLength=parent1.geneLength;
+        this.GeneArr = afterParentsGenotype(parent1, parent2, maxMutate);
     }
 
     public int getCurrentGenotype(int i){      //nieco szaleństwa
@@ -34,7 +35,7 @@ public class Genotype{
     public ArrayList<Integer> calculateGenotype(Animal parent1, Animal parent2, double sumEnergy){
         ArrayList<Integer> newGenArr = new ArrayList<>();
         int p = (int) ((double) parent1.getEnergy() / sumEnergy * geneLength);
-        for (int i = 0; i < geneLength ; i++) {
+        for (int i = 0; i < parent1.geneLength ; i++) {
             if (i < p) {
                 newGenArr.add(parent1.getGenotype().get(i));
             } else {
@@ -44,12 +45,12 @@ public class Genotype{
         return newGenArr;
     }
 
-    public ArrayList<Integer> mutateGenotype(ArrayList<Integer> genotypeArray, int minMutate, int maxMutate){
+    public ArrayList<Integer> mutateGenotype(ArrayList<Integer> genotypeArray, int maxMutate){
 
         Random r1 = new Random();
         List<Integer> rangeList = IntStream.rangeClosed(0, geneLength-1)
                 .boxed().toList(); // lista indexów długości genomu
-        int numToMutate = r1.nextInt(minMutate, maxMutate + 1); // ranodmowa liczba genów do mutacji
+        int numToMutate = r1.nextInt(0, maxMutate + 1); // ranodmowa liczba genów do mutacji
 
         // get random subset of size numToMutate
         List<Integer> rangeLinkedList = new LinkedList<Integer>(rangeList);
@@ -68,7 +69,7 @@ public class Genotype{
         return genotypeArray;
     }
 
-    public ArrayList<Integer> afterParentsGenotype(Animal parent1, Animal parent2, int minMutate, int maxMutate){   //dziedziczenie genotypu po rodzicach
+    public ArrayList<Integer> afterParentsGenotype(Animal parent1, Animal parent2, int maxMutate){   //dziedziczenie genotypu po rodzicach
         int sumOfParentsEnergy = parent1.getEnergy() + parent2.getEnergy();
         int sumOfParentsDays = parent1.howOld() + parent2.howOld();
         int sumOfParentsChildren = parent1.getChildren() + parent2.getChildren();
@@ -100,6 +101,6 @@ public class Genotype{
             }
         }
 
-        return mutateGenotype(newGenArr,minMutate, maxMutate); //pelna losowosc
+        return mutateGenotype(newGenArr, maxMutate); //pelna losowosc
     }
 }

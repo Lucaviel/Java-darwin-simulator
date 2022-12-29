@@ -26,15 +26,17 @@ public class Animal{
         this.gene = new Genotype(geneLength);
         this.currentGene = 0;
         this.map= map;
+
     }
 
-    public Animal(IWorldMap map, Animal parent1, Animal parent2, int minMutate, int maxMutate){
+    public Animal(IWorldMap map, Animal parent1, Animal parent2, int maxMutate){
         this.orientation = Direction.NORTH;
         this.days = 0;
         this.children = 0;
+        this.geneLength = parent1.geneLength;
         this.position = parent1.getPosition();
         this.energy = parent1.getEnergy() / 4 + parent2.getEnergy() / 4;
-        this.gene = new Genotype(parent1, parent2, minMutate, maxMutate);
+        this.gene = new Genotype(parent1, parent2, maxMutate);
         this.currentGene = 0;
         this.map = map;
     }
@@ -121,6 +123,7 @@ public class Animal{
     }
 
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition){
-        for (IPositionChangeObserver observer : observers) observer.positionChanged(this,oldPosition, newPosition);
+        for (IPositionChangeObserver observer : observers)
+            observer.positionChanged(this, oldPosition, newPosition);
     }
 }

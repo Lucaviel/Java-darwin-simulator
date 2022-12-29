@@ -100,7 +100,7 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
         ArrayList<Animal> animalsOnCurrentPosition = animals.get(oldPosition);
         for (int i = 0; i< animalsOnCurrentPosition.size(); i++){
             if (animalsOnCurrentPosition.get(i) == animal){
-                animals.get(oldPosition).remove(i);
+                animals.get(oldPosition).remove(i); // i
                 animals.get(newPosition).add(animal);
                 animals.get(newPosition).sort(compareByEnergy.reversed());
             }
