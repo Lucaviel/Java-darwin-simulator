@@ -14,11 +14,14 @@ public class Simulator implements IEngine,Runnable{
     protected int minMutate;
     protected int maxMutate;
     protected List<Animal> animals = new ArrayList<Animal>();
+    List<Vector2d> equatorGrass = new ArrayList<Vector2d>();
+    List<Vector2d> underEquatorGrass = new ArrayList<Vector2d>();
+    List<Vector2d> upEquatorGrass = new ArrayList<Vector2d>();
     private final Random generator = new Random();
     protected IWorldMap map;
     protected int startGrass;
-
     protected int plantEnergy = 5;
+    protected Statistics statistics;
 
     public Simulator(IWorldMap map, int startAnimals, int startEnergy, int numGrass, int geneLength,
                      int dailyLossEnergy, int reproductionEnergy, int maxMutate, int startGrass){
@@ -31,24 +34,15 @@ public class Simulator implements IEngine,Runnable{
         this.maxMutate = maxMutate;
         this.startGrass = startGrass;
         this.map = map;
-            //eating grass
-            //reproduction
-            //grass growing
+        this.equatorGrass = grassGenerator((int) (0.4*map.getHeight()), (int) (0.6*map.getHeight()));
+        this.underEquatorGrass = grassGenerator(0, (int) (0.4*map.getHeight()));
+        this.upEquatorGrass = grassGenerator((int) (0.6*map.getHeight()), map.getHeight());
         addRandomAnimals(map, startAnimals);
         addRandomGrass(startGrass);
-//        run();
+        this.statistics = new Statistics(this.map);
     }
 
     public void run(){
-
-//        ArrayList<Animal> aaa = getAnimalDetails();
-//        for(Animal animal: aaa){
-//            System.out.println(animal.getPosition());
-//            System.out.println(animal.getEnergy());
-//            System.out.println(animal.howOld());
-//            System.out.println(animal.getChildren());
-//            System.out.println("-------------");
-//        }
         for(int i=0; i<DAYS; i++) {
 
             deleteAnimals();
@@ -88,7 +82,7 @@ public class Simulator implements IEngine,Runnable{
             }
         }
     }
-    //to sb dodalam, żeby konkretnego zwierza dodać, bo mi inaczej nie wchodzil idk why
+
     public void addSpecificAnimal(Animal animal) {
         this.animals.add(animal);
         this.map.place(animal);
@@ -106,16 +100,6 @@ public class Simulator implements IEngine,Runnable{
 
 
     public void deleteAnimals(){
-//        for (int i = 0; i < animals.size(); i++) {
-//            if (animals.get(i).getEnergy() <= 0) {
-//                //System.out.println("Energia to: " + animals.get(i).getEnergy());
-//                map.delete(animals.get(i));
-//                animals.remove(animals.get(i)); //bylo i ale bylo tez sciernisko a tu moze san franciso kto wie
-//
-//            }
-//        }
-
-        //removing if dead
         for (int i = 0; i < animals.size(); i++) {
             if (animals.get(i).getEnergy() <= 0) {
                 map.delete(animals.get(i));
@@ -130,36 +114,6 @@ public class Simulator implements IEngine,Runnable{
 
     }
 
-
-
-
-
-    // to działa, ale jest taką funkcja z gatunku uposeldzenie umysłowe, po prostu chciałam, zeby tylko mi dawało animalse,
-    // a nie ten linked mape xd, ale nigdzie tego nie używam finalnie just saying
-//    public ArrayList<Animal> getAnimalDetails() {
-//
-//        ArrayList<Animal> animalArray = new ArrayList<>();
-//
-//        for (int x = 0; x < map.getWidth(); x++) {
-//            for (int y = 0; y < map.getHeight(); y++) {
-//                ArrayList<Animal> animalsAtVector = map.getAnimals().get(new Vector2d(x, y));
-//                int animalsAtVectorSize = animalsAtVector.size();
-//                if (animalsAtVectorSize > 0) {
-//                    int i;
-//                    for (i = 0; i < animalsAtVectorSize; i++) {
-//                        animalArray.add(animalsAtVector.get(i));
-//                    }
-//                }
-//            }
-//        }
-//        return animalArray;
-//    }
-
-    // to jest to sortowanie, z tym, ze tak było jeszcze na koncu w wymagnaiach projektu,
-    // że jak się nie da już bardziej porównac to dac ranodomowo któregokolwiek
-    // tot ego nie uwzgledniłam w tym tbh, no to kyrie elejson, co za różnic, i guess
-    // pierwszy lepszy to jest losowy w pewnym sensie xd ew. mg nad tym posiedziec jeszcze
-    //
     public void sortAnimals(ArrayList<Animal> animalsUnsorted){
 
         Comparator<Animal> compareByMany = Comparator.comparing(Animal::getEnergy)
@@ -170,7 +124,6 @@ public class Simulator implements IEngine,Runnable{
     }
 
     public void eatingAndReproduction(){
-        Random rand = new Random();
         for (int x = 0; x < map.getWidth(); x++)
             for (int y = 0; y < map.getHeight(); y++) {
                 ArrayList<Animal> animalsAtVector = map.getAnimals().get(new Vector2d(x, y));
@@ -181,6 +134,7 @@ public class Simulator implements IEngine,Runnable{
                     if (map.getGrasses().get(new Vector2d(x, y)) != null) {
                         bestAnimal.changeEnergy(plantEnergy);
                         map.removeGrass(new Vector2d(x,y));
+                        updateGrass(x,y); /**/
                     }
 
                     //reproduction
@@ -194,37 +148,78 @@ public class Simulator implements IEngine,Runnable{
             }
 
     public void addRandomGrass(int initGrassNumber) {
-
-        Set<Vector2d> tempGrassCounterSet = new HashSet<>();
-
         int i = 0;
-        Random rand = new Random();
-        int x = 0;
-        int y = 0;
+        int drawNumber = generator.nextInt(10)+1; //losowanie od 1 do 10
 
-        while (i < initGrassNumber) { //80% rownik
-            int drawNumber = generator.nextInt(10)+1; //losowanie od 1 do 10
-            if (drawNumber <= 8){
-                x = rand.nextInt(1, map.getWidth()+1);
-                int a = (int) (map.getHeight()*0.2+0.4*map.getHeight());
-                y = rand.nextInt(a);
-            }
-            else{ //20% w innym miejscu
-                x = rand.nextInt(1, map.getWidth()+1);
-                int randd = (generator.nextInt(2)); //losowanie od 1 do 2
-                if(randd==0){
-                    y = rand.nextInt((int) (map.getHeight()*0.4));
+        while (i < initGrassNumber) {
+            if (equatorGrass.size() == 0 && underEquatorGrass.size() == 0 && upEquatorGrass.size() == 0)
+                break;
+            if (drawNumber <= 8){ //80% prawdopodobieństwa na równik /**/
+                if(equatorGrass.size() != 0) {
+                    if(equatorGrass.size() == 1)
+                        drawNumber = 0;
+                    else drawNumber = generator.nextInt(equatorGrass.size() - 1);
+                    map.addGrass(equatorGrass.get(drawNumber));
+                    equatorGrass.remove(drawNumber);
+                    i++;
                 }
                 else{
-                    int a = (int) (map.getHeight()*0.4+0.6*map.getHeight());
-                    y = rand.nextInt(a);
+                    drawNumber = generator.nextInt(9,11);
+                    continue;
                 }
             }
-            if (!(map.isOccupiedByGrass(new Vector2d(x-1, y)))) {
-                tempGrassCounterSet.add(new Vector2d(x-1,y));
-                map.addGrass(new Vector2d(x-1,y));
-                i = tempGrassCounterSet.size();
+            else{ //20% w innym miejscu
+                if(drawNumber==9){
+                    if(underEquatorGrass.size() != 0) {
+                        if(underEquatorGrass.size() == 1)
+                            drawNumber = 0;
+                        else drawNumber = generator.nextInt(underEquatorGrass.size() - 1);
+                        map.addGrass(underEquatorGrass.get(drawNumber));
+                        underEquatorGrass.remove(drawNumber);
+                        i++;
+                    }
+                    else{
+                        drawNumber = 10;
+                        continue;
+                    }
+                }
+                else{
+                    if(upEquatorGrass.size() != 0) {
+                        if(upEquatorGrass.size() == 1)
+                            drawNumber = 0;
+                        else drawNumber = generator.nextInt(upEquatorGrass.size() - 1);
+                        map.addGrass(upEquatorGrass.get(drawNumber));
+                        upEquatorGrass.remove(drawNumber);
+                        i++;
+                    }
+                    else{
+                        if(underEquatorGrass.size() != 0)
+                            drawNumber = 9;
+                        else drawNumber = 3;
+                        continue;
+                    }
+                }
             }
+            drawNumber = generator.nextInt(10)+1;
         }
+    }
+
+    public List<Vector2d> grassGenerator(int a, int b){
+        List<agh.ics.oop.Vector2d> setOfGrass = new ArrayList<Vector2d>();
+        for (int x = 0; x < map.getWidth(); x++) {
+            if ((b == 0) || (a==b))
+                break;
+            for (int y = a; y < b; y++)
+                setOfGrass.add(new agh.ics.oop.Vector2d(x, y));
+        }
+        return setOfGrass;
+    }
+
+    public void updateGrass(int x, int y){
+        if(y<(int)(0.4*map.getHeight()))
+            underEquatorGrass.add(new Vector2d(x,y));
+        else if (y<(int)(0.6*map.getHeight()))
+            equatorGrass.add(new Vector2d(x, y));
+        else upEquatorGrass.add(new Vector2d(x, y));
     }
 }

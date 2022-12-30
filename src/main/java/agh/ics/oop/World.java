@@ -5,11 +5,11 @@ public class World {
     public static void main(String[] args) {
 
        // IWorldMap map = new SphereWorld(5, 5);
-        IWorldMap map = new SphereWorld(10, 10);
+        IWorldMap map = new SphereWorld(5, 5);
         Animal pet1 = new Animal(map, new Vector2d(0, 0), 10, 8);
         Animal pet2 = new Animal(map, new Vector2d(1, 0), 20, 8);
         IEngine bla = new Simulator(map, 0, 6, 10, 8, -2,
-                5, 2, 6);
+                5, 2, 20);
 
         System.out.println(map.getAnimals());
 
