@@ -59,5 +59,6 @@ public interface IWorldMap {
     void removeGrass(Vector2d position);
     boolean isOccupiedByGrass(Vector2d position);
     void addGrass(Vector2d position);
+    int getNumOfGrasses();
 
 }

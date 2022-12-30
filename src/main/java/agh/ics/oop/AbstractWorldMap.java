@@ -117,4 +117,8 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
         grasses.put(position,new Grass(position));
     }
 
+    public int getNumOfGrasses(){
+        return grasses.size();
+    }
+
 }

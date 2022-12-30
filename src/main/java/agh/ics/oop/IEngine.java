@@ -15,4 +15,6 @@ public interface IEngine {
      */
     void addSpecificAnimal(Animal animal);
     void run();
+
+    void switchPausing();
 }

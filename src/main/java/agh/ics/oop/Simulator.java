@@ -1,17 +1,23 @@
 package agh.ics.oop;
 
+import agh.ics.oop.gui.App;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+
 import java.util.*;
 
-public class Simulator implements IEngine,Runnable{
-    protected int day = 0;
-    protected final int DAYS = 6;
+public class Simulator implements IEngine,Runnable {
+    public int[] outputSum;
+    public int days = 0;
+    protected final int DAYS = 10000;
+    public boolean pausing = false;
     protected int startAnimals;
     protected int dailyLossEnergy;
     protected int geneLength;
     protected int numGrass;
     protected int startEnergy;
     protected int reproductionEnergy;
-    protected int minMutate;
     protected int maxMutate;
     protected List<Animal> animals = new ArrayList<Animal>();
     List<Vector2d> equatorGrass = new ArrayList<Vector2d>();
@@ -21,52 +27,121 @@ public class Simulator implements IEngine,Runnable{
     protected IWorldMap map;
     protected int startGrass;
     protected int plantEnergy = 5;
-    protected Statistics statistics;
+    private int deadAnimalsNum = 0;
+    private int summedLifeSpan = 0;
+    private Animal trackedAnimal;
+    public boolean tracked = false;
+    protected App simulationObserver;
+    protected GridPane pane;
+    protected int moveEnergy;
+    public Label daysCount;
+    public Label genome;
+    Label trackedGenome;
+    Label trackedOffspring;
+    Label trackedDescendants;
+    Label deathDay;
+    ArrayList<String[]> output;
 
     public Simulator(IWorldMap map, int startAnimals, int startEnergy, int numGrass, int geneLength,
-                     int dailyLossEnergy, int reproductionEnergy, int maxMutate, int startGrass){
+                     int dailyLossEnergy, int reproductionEnergy, int maxMutate, int startGrass,
+                     App simulationObserver, GridPane pane, int moveEnergy, int plantEnergy,
+                     Label daysCount, Label genome,
+                     Label trackedGenome, Label trackedOffspring, Label trackedDescendants, Label deathDay,
+                     ArrayList<String[]> output, int[] outputSum) {
         this.startAnimals = startAnimals;
         this.startEnergy = startEnergy;
+        this.simulationObserver = simulationObserver;
+        this.pane = pane;
         this.numGrass = numGrass;
         this.geneLength = geneLength;
         this.dailyLossEnergy = dailyLossEnergy;
         this.reproductionEnergy = reproductionEnergy;
         this.maxMutate = maxMutate;
         this.startGrass = startGrass;
+        this.plantEnergy = plantEnergy;
+        this.moveEnergy = moveEnergy;
         this.map = map;
-        this.equatorGrass = grassGenerator((int) (0.4*map.getHeight()), (int) (0.6*map.getHeight()));
-        this.underEquatorGrass = grassGenerator(0, (int) (0.4*map.getHeight()));
-        this.upEquatorGrass = grassGenerator((int) (0.6*map.getHeight()), map.getHeight());
+        this.equatorGrass = grassGenerator((int) (0.4 * map.getHeight()), (int) (0.6 * map.getHeight()));
+        this.underEquatorGrass = grassGenerator(0, (int) (0.4 * map.getHeight()));
+        this.upEquatorGrass = grassGenerator((int) (0.6 * map.getHeight()), map.getHeight());
+        this.daysCount = daysCount;
+        this.genome = genome;
+        this.trackedGenome = trackedGenome;
+        this.trackedOffspring = trackedOffspring;
+        this.trackedDescendants = trackedDescendants;
+        this.deathDay = deathDay;
+        this.output = output;
+        this.outputSum = outputSum;
         addRandomAnimals(map, startAnimals);
         addRandomGrass(startGrass);
-        this.statistics = new Statistics(this.map);
     }
 
-    public void run(){
-        for(int i=0; i<DAYS; i++) {
+    @Override
+    public synchronized void run() {
 
-            deleteAnimals();
-            System.out.println("przed jedzeniu");
-            System.out.println(map.getAnimals());
-            System.out.println(map.getGrasses());
-            eatingAndReproduction();
-            System.out.println("po jedzeniu");
-            System.out.println(map.getAnimals());
-            System.out.println(map.getGrasses());
-            for (int j = 0; j < animals.size(); j++) {
-                Vector2d prev = animals.get(j).getPosition();
-                animals.get(j).move(dailyLossEnergy);
-                Vector2d now = animals.get(j).getPosition();
-                animals.get(j).positionChanged(prev, now);
-                animals.get(j).changeDays();
+        while(this.numOfAnimals() > 0) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();}
+
+            if (!pausing) {
+                singleRun();
+                this.days++;
             }
-            addRandomGrass( 3);
-            this.day++;
+            if (tracked){
+                Platform.runLater(() -> {
+                    simulationObserver
+                            .trackedAnimalVisual(trackedAnimal,this,this.map,trackedGenome,
+                                    trackedOffspring,trackedDescendants,deathDay);
+                });
+            }
         }
     }
 
-    public int countAnimals(){
+
+    public synchronized void singleRun() {
+
+        Platform.runLater(() -> {
+            simulationObserver.mapVisual(map,pane,this);
+            simulationObserver.statisticsVisual(this,this.daysCount,this.genome);
+            simulationObserver.outputUpdate(map,this,output,outputSum);
+        });
+
+        deleteAnimals();
+
+        for (Animal animal : animals) {
+            Vector2d prev = animal.getPosition();
+            animal.move(dailyLossEnergy);
+            Vector2d now = animal.getPosition();
+            animal.positionChanged(prev, now);
+            animal.changeDays();
+        }
+        eatingAndReproduction();
+        addRandomGrass(startGrass);
+
+    }
+    @Override
+    public void switchPausing(){
+        pausing = !pausing;
+    }
+
+    public int numOfAnimals() {
         return animals.size();
+    }
+    public Animal getTrackedAnimal() {
+        return trackedAnimal;
+    }
+
+    public void setTrackedAnimal(Animal trackedAnimal) {
+        this.trackedAnimal = trackedAnimal;
+    }
+
+    public void setTracking(){
+        tracked = !tracked;
+    }
+    public void setTrackingVal(boolean a){
+        tracked = a;
     }
 
     public void addRandomAnimals(IWorldMap map, int initAnimalsNumber) {
@@ -89,32 +164,35 @@ public class Simulator implements IEngine,Runnable{
     }
 
     private void newBornAnimal(Animal parent1, Animal parent2) {
-        if ((parent1.isEnergyMoreThan(reproductionEnergy)) && (parent2.isEnergyMoreThan(reproductionEnergy))){
+        if ((parent1.isEnergyMoreThan(reproductionEnergy)) && (parent2.isEnergyMoreThan(reproductionEnergy))) {
             parent1.changeChildren();
             parent2.changeChildren();
-            Animal kid = new Animal(map,parent1,parent2,maxMutate);
+            Animal kid = new Animal(map, parent1, parent2, maxMutate);
             map.place(kid);
             animals.add(kid);
         }
     }
 
 
-    public void deleteAnimals(){
+    public void deleteAnimals() {
         for (int i = 0; i < animals.size(); i++) {
             if (animals.get(i).getEnergy() <= 0) {
+                deadAnimalsNum++;
+                summedLifeSpan = summedLifeSpan + animals.get(i).howOld();
                 map.delete(animals.get(i));
             }
         }
 
-        for (Animal animal : animals){
-            if (animal.getEnergy() <= 0){ map.delete(animal);}
+        for (Animal animal : animals) {
+            if (animal.getEnergy() <= 0) {
+                map.delete(animal);
+            }
         }
-
         animals.removeIf(animal -> animal.getEnergy() <= 0);
 
     }
 
-    public void sortAnimals(ArrayList<Animal> animalsUnsorted){
+    public void sortAnimals(ArrayList<Animal> animalsUnsorted) {
 
         Comparator<Animal> compareByMany = Comparator.comparing(Animal::getEnergy)
                 .thenComparing(Animal::howOld).thenComparing(Animal::getChildren).reversed();
@@ -123,7 +201,7 @@ public class Simulator implements IEngine,Runnable{
 
     }
 
-    public void eatingAndReproduction(){
+    public void eatingAndReproduction() {
         for (int x = 0; x < map.getWidth(); x++)
             for (int y = 0; y < map.getHeight(); y++) {
                 ArrayList<Animal> animalsAtVector = map.getAnimals().get(new Vector2d(x, y));
@@ -133,81 +211,75 @@ public class Simulator implements IEngine,Runnable{
                     //eating
                     if (map.getGrasses().get(new Vector2d(x, y)) != null) {
                         bestAnimal.changeEnergy(plantEnergy);
-                        map.removeGrass(new Vector2d(x,y));
-                        updateGrass(x,y); /**/
+                        map.removeGrass(new Vector2d(x, y));
+                        updateGrass(x, y); /**/
                     }
 
                     //reproduction
-                    if (animalsAtVector.size() > 1){
-                            Animal parent1 = bestAnimal;
-                            Animal parent2 = animalsAtVector.get(1);
-                            newBornAnimal(parent1, parent2);
-                        }
+                    if (animalsAtVector.size() > 1) {
+                        Animal parent2 = animalsAtVector.get(1);
+                        newBornAnimal(bestAnimal, parent2);
                     }
                 }
             }
+    }
 
     public void addRandomGrass(int initGrassNumber) {
         int i = 0;
-        int drawNumber = generator.nextInt(10)+1; //losowanie od 1 do 10
+        int drawNumber = generator.nextInt(10) + 1; //losowanie od 1 do 10
 
         while (i < initGrassNumber) {
             if (equatorGrass.size() == 0 && underEquatorGrass.size() == 0 && upEquatorGrass.size() == 0)
                 break;
-            if (drawNumber <= 8){ //80% prawdopodobieństwa na równik /**/
-                if(equatorGrass.size() != 0) {
-                    if(equatorGrass.size() == 1)
+            if (drawNumber <= 8) { //80% prawdopodobieństwa na równik /**/
+                if (equatorGrass.size() != 0) {
+                    if (equatorGrass.size() == 1)
                         drawNumber = 0;
                     else drawNumber = generator.nextInt(equatorGrass.size() - 1);
                     map.addGrass(equatorGrass.get(drawNumber));
                     equatorGrass.remove(drawNumber);
                     i++;
-                }
-                else{
-                    drawNumber = generator.nextInt(9,11);
+                } else {
+                    drawNumber = generator.nextInt(9, 11);
                     continue;
                 }
-            }
-            else{ //20% w innym miejscu
-                if(drawNumber==9){
-                    if(underEquatorGrass.size() != 0) {
-                        if(underEquatorGrass.size() == 1)
+            } else { //20% w innym miejscu
+                if (drawNumber == 9) {
+                    if (underEquatorGrass.size() != 0) {
+                        if (underEquatorGrass.size() == 1)
                             drawNumber = 0;
                         else drawNumber = generator.nextInt(underEquatorGrass.size() - 1);
                         map.addGrass(underEquatorGrass.get(drawNumber));
                         underEquatorGrass.remove(drawNumber);
                         i++;
-                    }
-                    else{
+                    } else {
                         drawNumber = 10;
                         continue;
                     }
-                }
-                else{
-                    if(upEquatorGrass.size() != 0) {
-                        if(upEquatorGrass.size() == 1)
+                } else {
+                    if (upEquatorGrass.size() != 0) {
+                        if (upEquatorGrass.size() == 1)
                             drawNumber = 0;
                         else drawNumber = generator.nextInt(upEquatorGrass.size() - 1);
                         map.addGrass(upEquatorGrass.get(drawNumber));
                         upEquatorGrass.remove(drawNumber);
                         i++;
-                    }
-                    else{
-                        if(underEquatorGrass.size() != 0)
+                    } else {
+                        if (underEquatorGrass.size() != 0)
                             drawNumber = 9;
                         else drawNumber = 3;
                         continue;
                     }
                 }
             }
-            drawNumber = generator.nextInt(10)+1;
+            drawNumber = generator.nextInt(10) + 1;
         }
     }
 
-    public List<Vector2d> grassGenerator(int a, int b){
+    public List<Vector2d> grassGenerator(int a, int b) {
         List<agh.ics.oop.Vector2d> setOfGrass = new ArrayList<Vector2d>();
         for (int x = 0; x < map.getWidth(); x++) {
-            if ((b == 0) || (a==b))
+            if ((b == 0) || (a == b))
                 break;
             for (int y = a; y < b; y++)
                 setOfGrass.add(new agh.ics.oop.Vector2d(x, y));
@@ -215,11 +287,71 @@ public class Simulator implements IEngine,Runnable{
         return setOfGrass;
     }
 
-    public void updateGrass(int x, int y){
-        if(y<(int)(0.4*map.getHeight()))
-            underEquatorGrass.add(new Vector2d(x,y));
-        else if (y<(int)(0.6*map.getHeight()))
+    public void updateGrass(int x, int y) {
+        if (y < (int) (0.4 * map.getHeight()))
+            underEquatorGrass.add(new Vector2d(x, y));
+        else if (y < (int) (0.6 * map.getHeight()))
             equatorGrass.add(new Vector2d(x, y));
         else upEquatorGrass.add(new Vector2d(x, y));
+    }
+
+    public int avgEnergy() {
+        int sum = 0;
+        for (Animal animal : animals) sum = sum + animal.getEnergy();
+        if (numOfAnimals() == 0) return 0;
+        return sum / numOfAnimals();
+    }
+
+    public int getAvgLifeSpan() {
+        if (deadAnimalsNum == 0) return 0;
+        return summedLifeSpan / deadAnimalsNum;
+    }
+
+    public int avgOffspringNum() {
+        int sum = 0;
+        int num = numOfAnimals();
+        for (Animal animal : animals) {
+            sum = sum + animal.getChildren();
+        }
+        if (num == 0) return 0;
+        return sum / num;
+    }
+
+    public String dominantGenome() {
+        if (animalsWithDominantGenome() == null) return "";
+        if (animalsWithDominantGenome().size() == 0) return "";
+        String result = animalsWithDominantGenome().get(0).getGenotype().toString();
+        return result.replaceAll(",", "").replaceAll(" ", "");
+    }
+
+    public ArrayList<Animal> animalsWithDominantGenome() {
+        Map<ArrayList<Integer>, Integer> genotypes = new LinkedHashMap<>();
+        for (Animal animal : animals) {
+            if (genotypes.get(animal.getGenotype()) != null) {
+                int i = genotypes.get(animal.getGenotype());
+                genotypes.remove(animal.getGenotype());
+                genotypes.put(animal.getGenotype(), i + 1);
+            } else genotypes.put(animal.getGenotype(), 1);
+        }
+        int val = 0;
+        ArrayList<Integer> genome = new ArrayList<>();
+        ArrayList<Animal> result = new ArrayList<>();
+
+        for (Map.Entry<ArrayList<Integer>, Integer> el : genotypes.entrySet()) {
+            if (el.getValue() > val) {
+                genome = el.getKey();
+                val = el.getValue();
+            }
+        }
+
+        for (Animal animal : animals) {
+            if (animal.getGenotype().equals(genome)) result.add(animal);
+        }
+
+        return result;
+    }
+
+    public int getStartEnergy() {
+        return startEnergy;
     }
 }
