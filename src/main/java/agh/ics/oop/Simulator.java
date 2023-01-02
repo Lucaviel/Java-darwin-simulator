@@ -119,7 +119,7 @@ public class Simulator implements IEngine,Runnable {
             simulationObserver.mapVisual(map,pane,this);
             simulationObserver.statisticsVisual(this,this.map,this.daysCount,this.genome, this.grassCount,
                     this.avgEnergyCount, this.avgLifeTime, this.freeFieldsCount);
-            simulationObserver.outputUpdate(map,this,output,outputSum);
+            simulationObserver.outputUpdate(map,this, output, outputSum);
         });
 
         deleteAnimals();
@@ -348,4 +348,11 @@ public class Simulator implements IEngine,Runnable {
 
         return result;
     }
+
+    public Integer getGenotypeInt(String g)
+    {
+        return Integer.valueOf(g);
+    }
+
+
 }

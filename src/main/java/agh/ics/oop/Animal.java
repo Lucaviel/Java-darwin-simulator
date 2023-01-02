@@ -123,4 +123,5 @@ public class Animal{
         for (IPositionChangeObserver observer : observers)
             observer.positionChanged(this, oldPosition, newPosition);
     }
+
 }
