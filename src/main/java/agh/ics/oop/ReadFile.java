@@ -9,12 +9,17 @@ import java.util.Scanner;
 
 public class ReadFile {
 
-    public static HashMap<String, String> getParametersFromFile() {
+    private final File f;
 
-        File f = new File("./parametry.txt");
-        Scanner read = null;
+    public ReadFile(String pathname) {
+        this.f = new File(pathname);
+    }
+
+    public HashMap<String, String> getParametersFromFile() {
+
+        Scanner read;
         try {
-            read = new Scanner(f);
+            read = new Scanner(this.f);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
