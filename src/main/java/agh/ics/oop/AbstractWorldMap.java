@@ -27,19 +27,9 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
             }
     }
 
-    Comparator<Animal> compareByEnergy = new Comparator<Animal>() {
-        @Override
-        public int compare(Animal o1, Animal o2) {
-            if (o1.getEnergy() > o2.getEnergy()) return 1;
-            if (o2.getEnergy() > o1.getEnergy()) return -1;
-            return 0;
-        }
-    };
-
     public Object objectAt(Vector2d position) {
         if (!animals.get(position).isEmpty() && animals.get(position).size() > 0){
             ArrayList<Animal> animalsOnThisField = animals.get(position);
-            animalsOnThisField.sort(compareByEnergy.reversed());
             return animalsOnThisField.get(0);}
         else if (grasses.get(position) != null) return grasses.get(position);
         else return null;
@@ -49,7 +39,6 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
         Vector2d newAnimalPosition = animal.getPosition();
         if (newAnimalPosition.follows(lowerLeft) && newAnimalPosition.precedes(upperRight)){
             this.animals.get(newAnimalPosition).add(animal);
-            this.animals.get(newAnimalPosition).sort(compareByEnergy.reversed());
             animal.addObserver(this);
             return true;
         }
@@ -102,7 +91,6 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
             if (animalsOnCurrentPosition.get(i) == animal){
                 animals.get(oldPosition).remove(i); // i
                 animals.get(newPosition).add(animal);
-                animals.get(newPosition).sort(compareByEnergy.reversed());
             }
         }
     }

@@ -10,7 +10,6 @@ import java.util.*;
 public class Simulator implements IEngine,Runnable {
     public int[] outputSum;
     public int days = 0;
-    protected final int DAYS = 10000;
     public boolean pausing = false;
     protected int startAnimals;
     protected int dailyLossEnergy;
@@ -19,14 +18,14 @@ public class Simulator implements IEngine,Runnable {
     protected int startEnergy;
     protected int reproductionEnergy;
     protected int maxMutate;
-    protected List<Animal> animals = new ArrayList<Animal>();
-    List<Vector2d> equatorGrass = new ArrayList<Vector2d>();
-    List<Vector2d> underEquatorGrass = new ArrayList<Vector2d>();
-    List<Vector2d> upEquatorGrass = new ArrayList<Vector2d>();
+    protected List<Animal> animals = new ArrayList<>();
+    List<Vector2d> equatorGrass;
+    List<Vector2d> underEquatorGrass;
+    List<Vector2d> upEquatorGrass;
     private final Random generator = new Random();
     protected IWorldMap map;
     protected int startGrass;
-    protected int plantEnergy = 5;
+    protected int plantEnergy;
     private int deadAnimalsNum = 0;
     private int summedLifeSpan = 0;
     private Animal trackedAnimal;
@@ -36,18 +35,25 @@ public class Simulator implements IEngine,Runnable {
     protected int moveEnergy;
     public Label daysCount;
     public Label genome;
+    public Label grassCount;
+    public Label avgEnergyCount;
+    public Label avgLifeTime;
+    public Label freeFieldsCount;
     Label trackedGenome;
+    Label trackedCurrentGen;
     Label trackedOffspring;
     Label trackedDescendants;
+    Label trackedEnergy;
+    Label trackedGrass;
     Label deathDay;
     ArrayList<String[]> output;
 
     public Simulator(IWorldMap map, int startAnimals, int startEnergy, int numGrass, int geneLength,
                      int dailyLossEnergy, int reproductionEnergy, int maxMutate, int startGrass,
                      App simulationObserver, GridPane pane, int moveEnergy, int plantEnergy,
-                     Label daysCount, Label genome,
-                     Label trackedGenome, Label trackedOffspring, Label trackedDescendants, Label deathDay,
-                     ArrayList<String[]> output, int[] outputSum) {
+                     Label daysCount, Label genome, Label freeFieldsCount, Label grassCount, Label avgEnergyCount, Label avgLifeTime,
+                     Label trackedGenome, Label trackedCurrentGen, Label trackedOffspring, Label trackedDescendants,
+                     Label trackedEnergy,  Label trackedGrass,Label deathDay, ArrayList<String[]> output, int[] outputSum) {
         this.startAnimals = startAnimals;
         this.startEnergy = startEnergy;
         this.simulationObserver = simulationObserver;
@@ -66,9 +72,16 @@ public class Simulator implements IEngine,Runnable {
         this.upEquatorGrass = grassGenerator((int) (0.6 * map.getHeight()), map.getHeight());
         this.daysCount = daysCount;
         this.genome = genome;
+        this.freeFieldsCount = freeFieldsCount;
+        this.grassCount = grassCount;
+        this.avgLifeTime = avgLifeTime;
+        this.avgEnergyCount = avgEnergyCount;
         this.trackedGenome = trackedGenome;
+        this.trackedCurrentGen = trackedCurrentGen;
         this.trackedOffspring = trackedOffspring;
         this.trackedDescendants = trackedDescendants;
+        this.trackedEnergy = trackedEnergy;
+        this.trackedGrass = trackedGrass;
         this.deathDay = deathDay;
         this.output = output;
         this.outputSum = outputSum;
@@ -92,8 +105,8 @@ public class Simulator implements IEngine,Runnable {
             if (tracked){
                 Platform.runLater(() -> {
                     simulationObserver
-                            .trackedAnimalVisual(trackedAnimal,this,this.map,trackedGenome,
-                                    trackedOffspring,trackedDescendants,deathDay);
+                            .trackedAnimalVisual(trackedAnimal,this,this.map,trackedGenome,trackedCurrentGen,
+                                    trackedOffspring,trackedDescendants, trackedEnergy, trackedGrass, deathDay);
                 });
             }
         }
@@ -104,7 +117,8 @@ public class Simulator implements IEngine,Runnable {
 
         Platform.runLater(() -> {
             simulationObserver.mapVisual(map,pane,this);
-            simulationObserver.statisticsVisual(this,this.daysCount,this.genome);
+            simulationObserver.statisticsVisual(this,this.map,this.daysCount,this.genome, this.grassCount,
+                    this.avgEnergyCount, this.avgLifeTime, this.freeFieldsCount);
             simulationObserver.outputUpdate(map,this,output,outputSum);
         });
 
@@ -137,9 +151,6 @@ public class Simulator implements IEngine,Runnable {
         this.trackedAnimal = trackedAnimal;
     }
 
-    public void setTracking(){
-        tracked = !tracked;
-    }
     public void setTrackingVal(boolean a){
         tracked = a;
     }
@@ -173,21 +184,15 @@ public class Simulator implements IEngine,Runnable {
         }
     }
 
-
     public void deleteAnimals() {
-        for (int i = 0; i < animals.size(); i++) {
-            if (animals.get(i).getEnergy() <= 0) {
+        for (Animal value : animals) {
+            if (value.getEnergy() <= 0) {
                 deadAnimalsNum++;
-                summedLifeSpan = summedLifeSpan + animals.get(i).howOld();
-                map.delete(animals.get(i));
+                summedLifeSpan = summedLifeSpan + value.howOld();
+                map.delete(value);
             }
         }
 
-        for (Animal animal : animals) {
-            if (animal.getEnergy() <= 0) {
-                map.delete(animal);
-            }
-        }
         animals.removeIf(animal -> animal.getEnergy() <= 0);
 
     }
@@ -208,15 +213,13 @@ public class Simulator implements IEngine,Runnable {
                 if (!animalsAtVector.isEmpty()) {
                     sortAnimals(animalsAtVector);
                     Animal bestAnimal = animalsAtVector.get(0);
-                    //eating
-                    if (map.getGrasses().get(new Vector2d(x, y)) != null) {
+                    if (map.getGrasses().get(new Vector2d(x, y)) != null) { //jedzenie
                         bestAnimal.changeEnergy(plantEnergy);
+                        bestAnimal.changeGrass();
                         map.removeGrass(new Vector2d(x, y));
                         updateGrass(x, y); /**/
                     }
-
-                    //reproduction
-                    if (animalsAtVector.size() > 1) {
+                    if (animalsAtVector.size() > 1) {   //rozmnażanie
                         Animal parent2 = animalsAtVector.get(1);
                         newBornAnimal(bestAnimal, parent2);
                     }
@@ -231,7 +234,7 @@ public class Simulator implements IEngine,Runnable {
         while (i < initGrassNumber) {
             if (equatorGrass.size() == 0 && underEquatorGrass.size() == 0 && upEquatorGrass.size() == 0)
                 break;
-            if (drawNumber <= 8) { //80% prawdopodobieństwa na równik /**/
+            if (drawNumber <= 8) { //80% prawdopodobieństwa na równik
                 if (equatorGrass.size() != 0) {
                     if (equatorGrass.size() == 1)
                         drawNumber = 0;
@@ -277,7 +280,7 @@ public class Simulator implements IEngine,Runnable {
     }
 
     public List<Vector2d> grassGenerator(int a, int b) {
-        List<agh.ics.oop.Vector2d> setOfGrass = new ArrayList<Vector2d>();
+        List<agh.ics.oop.Vector2d> setOfGrass = new ArrayList<>();
         for (int x = 0; x < map.getWidth(); x++) {
             if ((b == 0) || (a == b))
                 break;
@@ -307,14 +310,9 @@ public class Simulator implements IEngine,Runnable {
         return summedLifeSpan / deadAnimalsNum;
     }
 
-    public int avgOffspringNum() {
-        int sum = 0;
-        int num = numOfAnimals();
-        for (Animal animal : animals) {
-            sum = sum + animal.getChildren();
-        }
-        if (num == 0) return 0;
-        return sum / num;
+    public int freeFieldsNum(){
+        int allFields = map.getHeight()*map.getWidth();
+        return allFields - map.getNumOfGrasses() - this.numOfAnimals();
     }
 
     public String dominantGenome() {
@@ -349,9 +347,5 @@ public class Simulator implements IEngine,Runnable {
         }
 
         return result;
-    }
-
-    public int getStartEnergy() {
-        return startEnergy;
     }
 }

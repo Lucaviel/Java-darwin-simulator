@@ -12,6 +12,7 @@ public class Animal{
     protected Vector2d position;
     protected int currentGene;
     protected int geneLength;
+    protected int eatenGrass;
     IWorldMap map;
     private List<IPositionChangeObserver> observers = new ArrayList<>();
 
@@ -20,6 +21,7 @@ public class Animal{
         this.orientation = Direction.NORTH;
         this.days = 0;
         this.children = 0;
+        this.eatenGrass = 0;
         this.position = randomPosition;
         this.energy = startEnergy;
         this.geneLength = geneLength;
@@ -33,6 +35,7 @@ public class Animal{
         this.orientation = Direction.NORTH;
         this.days = 0;
         this.children = 0;
+        this.eatenGrass = 0;
         this.geneLength = parent1.geneLength;
         this.position = parent1.getPosition();
         this.energy = parent1.getEnergy() / 4 + parent2.getEnergy() / 4;
@@ -83,15 +86,11 @@ public class Animal{
     public void changeChildren(){
         this.children++;
     }
+    public void changeGrass() {this.eatenGrass++;}
 
     public boolean isEnergyMoreThan(int n)
     {
         return (this.getEnergy()>=n);
-    }
-
-    public boolean isEnergyLessThan(int n)
-    {
-        return (this.getEnergy()<=n);
     }
 
     public void changeEnergy(int energy){
@@ -109,10 +108,8 @@ public class Animal{
     public Vector2d getPosition(){
         return this.position;
     }
-
-    public String Visualize() {
-        return "src/main/resources/animal.png";
-    }
+    public int getCurrentGene() {return this.currentGene;}
+    public int getEatenGrass() {return this.eatenGrass;}
 
     public void addObserver(IPositionChangeObserver observer){
         observers.add(observer);
