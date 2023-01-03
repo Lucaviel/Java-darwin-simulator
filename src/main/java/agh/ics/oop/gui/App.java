@@ -10,9 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import java.io.*;
@@ -26,6 +28,7 @@ import static org.testng.Assert.assertTrue;
 
 public class App extends Application{
     Stage window;
+    Stage title;
     Scene inputs, animation;
 
     Image imgAnimal;
@@ -73,6 +76,7 @@ public class App extends Application{
     Button toFile = new Button("Generate CSV file of daily stats");
     ArrayList<String[]> output = new ArrayList<>();
     int[] outputSum = {0,0,0,0,0,0};
+    protected final static int SIZE = 25;
 
     public void outputUpdate(IWorldMap map, Simulator engine,ArrayList<String[]> output,int[] outputSum){
         String[] dailyOutput = {String.valueOf(engine.days),
@@ -99,7 +103,7 @@ public class App extends Application{
         avgLifeTime.setText("Average life in days: " + engine.getAvgLifeSpan());
     }
 
-    public void trackedAnimalVisual(Animal animal,Simulator engine,IWorldMap map,Label trackedGenome,
+    public void trackedAnimalVisual(Animal animal,Simulator engine,Label trackedGenome,
                                     Label trackedCurrentGen, Label trackedOffspring, Label trackedDescendants,
                                     Label trackedEnergy, Label trackedGrass, Label deathDay){
         if (animal.getEnergy() <= 0){
@@ -108,17 +112,19 @@ public class App extends Application{
             engine.setTrackedAnimal(null);
         }
         else{
-            trackedGenome.setText("Genome:" + (animal.getGenotype().toString().replace(",", "").replace(" ","")));
+            trackedGenome.setText("Genome:" + (animal.getGenotype().toString().replace(",",
+                    "").replace(" ","")));
             trackedCurrentGen.setText("Current Genotype: " + animal.getGenotype().get(animal.getCurrentGene()));
             trackedOffspring.setText("Children: " + animal.getChildren());
             trackedEnergy.setText("Energy: " + animal.getEnergy());
             trackedGrass.setText("Eaten grass: " + animal.getEatenGrass());
             trackedDescendants.setText("Days: " + animal.howOld());
+            deathDay.setText("Dead on: not yet");
         }
 
     }
 
-    public void mapVisual(IWorldMap map, GridPane pane, Simulator engine) {
+    public void mapVisual(IWorldMap map, GridPane pane) {
         pane.setGridLinesVisible(false);
         pane.getColumnConstraints().clear();
         pane.getRowConstraints().clear();
@@ -128,21 +134,21 @@ public class App extends Application{
         pane.setPadding(new Insets(10, 10, 10, 10));
 
         for (int i = 0; i < map.getWidth(); i++) {
-            ColumnConstraints columnConstraints = new ColumnConstraints(25);
+            ColumnConstraints columnConstraints = new ColumnConstraints(SIZE);
             pane.getColumnConstraints().add(columnConstraints);
         }
 
         for (int i = 0; i < map.getHeight(); i++) {
-            RowConstraints rowConstraints = new RowConstraints(25);
+            RowConstraints rowConstraints = new RowConstraints(SIZE);
             pane.getRowConstraints().add(rowConstraints);
         }
 
         for (int y = 0; y < map.getHeight(); y++)
             for (int x = 0; x < map.getWidth(); x++) {
                 if (map.objectAt(new Vector2d(x, y)) != null) {
-                    GuiElementBox Box = new GuiElementBox(25,imgAnimal);
+                    GuiElementBox Box = new GuiElementBox(SIZE,imgAnimal);
                     if (map.objectAt(new Vector2d(x, y)) instanceof Grass){
-                        Box = new GuiElementBox(25,imgGrass);
+                        Box = new GuiElementBox(SIZE,imgGrass);
                     }
 
                     VBox box = null;
@@ -159,9 +165,8 @@ public class App extends Application{
             }
     }
 
-    public void mapPaused(IWorldMap map, Simulator engine, GridPane pane, Label trackedGenome, Label trackedCurrentGen,
-                          Label trackedOffspring, Label trackedDescendants,Label trackedEnergy,  Label trackedGrass,
-                          Label deathDay,Button thisDominantGenome, Button thisToFile, Label csvInfo, Boolean show){
+    public void mapPaused(IWorldMap map, Simulator engine, GridPane pane,Button thisDominantGenome,
+                          Button thisToFile, Label csvInfo, Boolean show){
         pane.setGridLinesVisible(false);
         pane.getColumnConstraints().clear();
         pane.getRowConstraints().clear();
@@ -176,21 +181,21 @@ public class App extends Application{
 
 
         for (int i = 0; i < map.getWidth(); i++) {
-            ColumnConstraints columnConstraints = new ColumnConstraints(25);
+            ColumnConstraints columnConstraints = new ColumnConstraints(SIZE);
             pane.getColumnConstraints().add(columnConstraints);
         }
 
         for (int i = 0; i < map.getHeight(); i++) {
-            RowConstraints rowConstraints = new RowConstraints(25);
+            RowConstraints rowConstraints = new RowConstraints(SIZE);
             pane.getRowConstraints().add(rowConstraints);
         }
 
         for (int y = 0; y < map.getHeight(); y++)
             for (int x = 0; x < map.getWidth(); x++) {
                 if (map.objectAt(new Vector2d(x, y)) != null) {
-                    GuiElementBox Box = new GuiElementBox(25,imgAnimal);
+                    GuiElementBox Box = new GuiElementBox(SIZE,imgAnimal);
                     if (map.objectAt(new Vector2d(x, y)) instanceof Grass){
-                        Box = new GuiElementBox(25, imgGrass);
+                        Box = new GuiElementBox(SIZE, imgGrass);
                     }
 
                     if (map.objectAt(new Vector2d(x,y)) instanceof Animal) {
@@ -221,14 +226,13 @@ public class App extends Application{
                     });
                 }
             }
-
     }
 
     public String toCSV(String[] output) {
         return Stream.of(output).collect(Collectors.joining(";"));
     }
 
-    public void exportToFile(int day, ArrayList<String[]> thisOutput,int[] thisOutputSum) throws IOException {
+    public void exportToFile(int day, ArrayList<String[]> thisOutput) throws IOException {
         File csvOutputFile = new File("CSV/darwin_game_on_day_" + String.valueOf(day) + ".csv");
 
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
@@ -238,193 +242,252 @@ public class App extends Application{
             thisOutput.stream()
                     .map(this::toCSV)
                     .forEach(pw::println);
-//            pw.println();
-//            pw.print(thisOutputSum[0] / thisOutput.size());pw.print(";");
-//            pw.print(thisOutputSum[1] / thisOutput.size());pw.print(";");
-//            pw.print(thisOutputSum[2] / thisOutput.size());pw.print(";");
-//            pw.print(thisOutputSum[3] / thisOutput.size());pw.print(";");
         }
         assertTrue(csvOutputFile.exists());
     }
 
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
         window = primaryStage;
+        title = primaryStage;
 
-        ReadFile f = new ReadFile("src/main/resources/parametry.txt");
-        HashMap<String, String> parametersFromFile = f.getParametersFromFile();
+        FileChooser fileChooser = new FileChooser();
 
-        Label widthLabel = new Label("Width:");
-        String widthValue = parametersFromFile.get("WIDTH");
-        Label widthInput = new Label(widthValue);
+        FileChooser.ExtensionFilter extentionFilter = new FileChooser.ExtensionFilter("Txt files (*.txt)",
+                "*.txt");
+        fileChooser.getExtensionFilters().add(extentionFilter);
 
-        Label heightLabel = new Label("Height:");
-        String heightValue = parametersFromFile.get("HEIGHT");
-        Label heightInput = new Label(heightValue);
+        fileChooser.setInitialDirectory(new File("src/main/resources"));
 
-        Label startEnergyLabel = new Label("Start energy:");
-        String startEnergyValue = parametersFromFile.get("START_ENERGY");
-        Label startEnergyInput = new Label(startEnergyValue);
+        Label label = new Label("File:");
+        TextField tf= new TextField("Choose file");
+        Button btn = new Button("Choose file");
 
-        Label moveEnergyLabel = new Label("Move energy:");
-        String moveEnergyValue = parametersFromFile.get("MOVE_ENERGY");
-        Label moveEnergyInput = new Label(moveEnergyValue);
+        HBox root = new HBox();
+        root.setSpacing(20);
+        root.getChildren().addAll(label,tf,btn);
 
-        Label plantEnergyLabel = new Label("Plant energy:");
-        String plantEnergyValue = parametersFromFile.get("PLANT_ENERGY");
-        Label plantEnergyInput = new Label(plantEnergyValue);
+        btn.setOnAction(event->
+        {
+            fileChooser.setTitle("Open File");
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
 
-        Label initialNumOfAnimalsLabel = new Label("Initial number of animals:");
-        String initialNumOfAnimalsValue = parametersFromFile.get("START_ANIMALS");
-        Label initialNumOfAnimalsInput = new Label(initialNumOfAnimalsValue);
+            ReadFile f = new ReadFile(selectedFile);
+            HashMap<String, String> parametersFromFile = f.getParametersFromFile();
 
-        Label mapVersionLabel = new Label("Chosen game version:");
-        String mapVersionValue = parametersFromFile.get("MAP_VERSION");
-        Label mapVersionInput = new Label(mapVersionValue);
+            Label widthLabel = new Label("Width:");
+            String widthValue = parametersFromFile.get("WIDTH");
+            Label widthInput = new Label(widthValue);
 
+            Label heightLabel = new Label("Height:");
+            String heightValue = parametersFromFile.get("HEIGHT");
+            Label heightInput = new Label(heightValue);
 
-        VBox Labels = new VBox(widthLabel, startEnergyLabel, plantEnergyLabel,
-                heightLabel, moveEnergyLabel, initialNumOfAnimalsLabel, mapVersionLabel);
-        Labels.setSpacing(10);
-        Labels.setPadding(new Insets(10, 50, 50, 50));
-        VBox Fields = new VBox(widthInput, startEnergyInput, plantEnergyInput,
-                heightInput, moveEnergyInput, initialNumOfAnimalsInput, mapVersionInput);
-        Fields.setSpacing(10);
-        Fields.setPadding(new Insets(10, 50, 50, 50));
+            Label startEnergyLabel = new Label("Start energy:");
+            String startEnergyValue = parametersFromFile.get("START_ENERGY");
+            Label startEnergyInput = new Label(startEnergyValue);
 
-        HBox startBox = new HBox(Labels, Fields);
-        startBox.setAlignment(Pos.CENTER);
-        Button startstop = new Button("Start/Stop");
+            Label moveEnergyLabel = new Label("Move energy:");
+            String moveEnergyValue = parametersFromFile.get("MOVE_ENERGY");
+            Label moveEnergyInput = new Label(moveEnergyValue);
 
-        Button button = new Button("Start game");
-        button.setPrefWidth(200);
-        button.setOnAction(event -> {
-            int width = Integer.parseInt(widthInput.getText());
-            int height = Integer.parseInt(heightInput.getText());
-            int startEnergy = Integer.parseInt(startEnergyInput.getText());
-            int moveEnergy = Integer.parseInt(moveEnergyInput.getText());
-            int plantEnergy = Integer.parseInt(plantEnergyInput.getText());
-            int initAnimalsNumber = Integer.parseInt(initialNumOfAnimalsInput.getText());
-            String mapVersion = mapVersionInput.getText();
+            Label plantEnergyLabel = new Label("Plant energy:");
+            String plantEnergyValue = parametersFromFile.get("PLANT_ENERGY");
+            Label plantEnergyInput = new Label(plantEnergyValue);
 
-            IWorldMap finalworld;
-            if (Objects.equals(mapVersion, "EARTH"))
-                finalworld = new SphereWorld(width, height);
-            else finalworld = new HellMap(width, height, 0);
+            Label initialNumOfAnimalsLabel = new Label("Initial number of animals:");
+            String initialNumOfAnimalsValue = parametersFromFile.get("START_ANIMALS");
+            Label initialNumOfAnimalsInput = new Label(initialNumOfAnimalsValue);
 
-            Label trackedGenome = new Label();
-            Label trackedCurrentGen = new Label();
-            Label trackedOffspring = new Label();
-            Label trackedDays = new Label();
-            Label trackedEnergy = new Label();
-            Label trackedGrass = new Label();
-            Label deathDay = new Label();
-            VBox tracking1 = new VBox(trackedGenome,trackedCurrentGen, trackedOffspring,trackedDays,trackedEnergy,
-                    trackedGrass, deathDay);
+            Label mapVersionLabel = new Label("Chosen game version:");
+            String mapVersionValue = parametersFromFile.get("MAP_VERSION");
+            Label mapVersionInput = new Label(mapVersionValue);
 
 
-            dominantGenome.setVisible(false);
-            toFile.setVisible(false);
-            csvInfo.setVisible(false);
-            Region spacer0 = new Region();
-            spacer0.setPrefHeight(20);
+            Label geneLengthLabel = new Label("Length of Genotype:");
+            String geneLength0 = parametersFromFile.get("GENE_LENGTH");
+            Label geneLengthField = new Label(geneLength0 );
 
-            VBox buttons = new VBox( dominantGenome, toFile, spacer0, csvInfo);
-            buttons.setAlignment(Pos.CENTER);
-            buttons.setSpacing(5);
+            Label dailyPlantLabel = new Label("Daily growing plants:");
+            String dailyPlant0 = parametersFromFile.get("DAILY_GRASS");
+            Label dailyPlantField = new Label(dailyPlant0);
 
-            Simulator finalSimulator = new Simulator(finalworld, initAnimalsNumber, startEnergy,
-                    3, 8, -2, -5, 7, 10,
-                    this,finalSimulatorWorld,  moveEnergy, plantEnergy,
-                    daysCount,genotype, grassCount, avgEnergyCount, avgLifeTime, freeFieldsCount,
-                    trackedGenome,trackedCurrentGen, trackedOffspring,trackedDays,trackedEnergy, trackedGrass, deathDay,
-                    output,outputSum);
+            Label reproductionLossLabel = new Label("Reproduction energy:");
+            String reproductionLoss0 = parametersFromFile.get("REPRODUCT_LOSS");
+            Label reproductionLossField = new Label(reproductionLoss0);
 
-            mapVisual(finalworld,finalSimulatorWorld, finalSimulator);
+            Label maxMutateLabel = new Label("Max number of mutation:");
+            String maxMutate0 = parametersFromFile.get("MAX_MUTATE");
+            Label maxMutateField = new Label(maxMutate0);
 
-            Thread earthSimulatorThread = new Thread(finalSimulator);
-            earthSimulatorThread.start();
-            startstop.setOnAction((event2) -> {
-                finalSimulator.switchPausing();
-                if (finalSimulator.pausing) {
-                    this.mapPaused(finalworld, finalSimulator,finalSimulatorWorld,trackedGenome,trackedCurrentGen,
-                            trackedOffspring,trackedDays,trackedEnergy, trackedGrass, deathDay,dominantGenome,
-                            toFile, csvInfo,false);
-                    toFile.setOnAction((event3) -> {
-                        try {
-                            exportToFile(finalSimulator.days,output,outputSum);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                    dominantGenome.setOnAction((event3) -> {
-                        this.mapPaused(finalworld, finalSimulator,finalSimulatorWorld,trackedGenome,trackedCurrentGen,
-                                trackedOffspring,trackedDays,trackedEnergy,trackedGrass,deathDay, dominantGenome,
-                                toFile, csvInfo,true);
-                    });
-                }
-                else {
-                    dominantGenome.setVisible(false);
-                    toFile.setVisible(false);
-                    csvInfo.setVisible(false);
-                }
-            });
+            Label startGrassLabel = new Label("Grass on the start:");
+            String startGrass0 = parametersFromFile.get("START_GRASS");
+            Label startGrassField = new Label(startGrass0);
 
+            Label teleEnergyLabel = new Label("Teleport energy (only for HELL map):");
+            String teleEnergy0 = parametersFromFile.get("TELE_ENERGY");
+            Label teleEnergyField = new Label(teleEnergy0);
 
-            HBox statBox1 = new HBox(daysCount,genotype, freeFieldsCount);
-            HBox statBox2 = new HBox(grassCount,avgEnergyCount,avgLifeTime);
-            statBox1.setSpacing(15);
-            statBox2.setSpacing(15);
-            finalSimulatorWorld.setAlignment(Pos.CENTER);
-            VBox darwinMap = new VBox(finalSimulatorWorld,startstop);
-            darwinMap.setAlignment(Pos.TOP_CENTER);
+            VBox Labels = new VBox(widthLabel, startEnergyLabel, plantEnergyLabel,heightLabel, moveEnergyLabel,
+                    initialNumOfAnimalsLabel, mapVersionLabel, geneLengthLabel, dailyPlantLabel, reproductionLossLabel,
+                    maxMutateLabel, startGrassLabel, teleEnergyLabel);
+            Labels.setSpacing(10);
+            Labels.setPadding(new Insets(10, 50, 50, 50));
+            VBox Fields = new VBox(widthInput, startEnergyInput, plantEnergyInput,
+                    heightInput, moveEnergyInput, initialNumOfAnimalsInput, mapVersionInput,geneLengthField,
+                    dailyPlantField, reproductionLossField, maxMutateField, startGrassField, teleEnergyField);
+            Fields.setSpacing(10);
+            Fields.setPadding(new Insets(10, 50, 50, 50));
 
-            Region spacer = new Region();
-            spacer.setPrefHeight(20);
-            Region spacer1 = new Region();
-            spacer1.setPrefHeight(20);
-            Region spacer2 = new Region();
-            spacer2.setPrefHeight(20);
-            Region spacer3 = new Region();
-            spacer3.setPrefHeight(20);
-            Region spacer4 = new Region();
-            spacer4.setPrefHeight(20);
-            Region spacer5 = new Region();
-            spacer5.setPrefHeight(20);
-            Region spacer6 = new Region();
-            spacer6.setPrefHeight(20);
-            Region spacer7 = new Region();
-            spacer7.setPrefHeight(20);
+            Label titleStart = new Label("Chosen parametres:");
+            HBox parametreBox = new HBox(titleStart);
+            parametreBox.setAlignment(Pos.CENTER);
+            HBox startBox = new HBox(Labels, Fields);
+            startBox.setAlignment(Pos.CENTER);
+            Button startstop = new Button("Start/Stop");
 
-            Separator sep = new Separator(Orientation.HORIZONTAL);
-            Separator sep1 = new Separator(Orientation.HORIZONTAL);
-            Label trackingAnimalLabel = new Label("Tracked Animal Info");
-            Font font = Font.font("Verdana", FontWeight.BOLD, 15);
-            trackingAnimalLabel.setFont(font);
-            Label statsLabel = new Label("Simulation statistics");
-            statsLabel.setFont(font);
+            Button button = new Button("Start simulation");
+            button.setPrefWidth(200);
+            button.setOnAction(event2 -> {
+                int width = Integer.parseInt(widthInput.getText());
+                int height = Integer.parseInt(heightInput.getText());
+                int startEnergy = Integer.parseInt(startEnergyInput.getText());
+                int moveEnergy = Integer.parseInt(moveEnergyInput.getText());
+                int plantEnergy = Integer.parseInt(plantEnergyInput.getText());
+                int initAnimalsNumber = Integer.parseInt(initialNumOfAnimalsInput.getText());
+                String mapVersion = mapVersionInput.getText();
+                int geneLength = Integer.parseInt(geneLengthField.getText());
+                int dailyPlant = Integer.parseInt(dailyPlantField.getText());
+                int reproductionLoss = Integer.parseInt(reproductionLossField.getText());
+                int maxMutate = Integer.parseInt(maxMutateField.getText());
+                int startGrass = Integer.parseInt(startGrassField.getText());
+                int teleEnergy = Integer.parseInt(teleEnergyField.getText());
 
-            VBox tracking = new VBox(spacer3, statsLabel, spacer5, statBox1, spacer2, statBox2, spacer6,
-                                    sep,spacer, trackingAnimalLabel, spacer1, tracking1, spacer7, sep1,
-                                 spacer4, buttons);
+                IWorldMap finalworld;
+                if (Objects.equals(mapVersion, "EARTH"))
+                    finalworld = new SphereWorld(width, height, teleEnergy);
+                else finalworld = new HellMap(width, height, 0);
+
+                Label trackedGenome = new Label();
+                Label trackedCurrentGen = new Label();
+                Label trackedOffspring = new Label();
+                Label trackedDays = new Label();
+                Label trackedEnergy = new Label();
+                Label trackedGrass = new Label();
+                Label deathDay = new Label();
+                VBox tracking1 = new VBox(trackedGenome,trackedCurrentGen, trackedOffspring,trackedDays,trackedEnergy,
+                        trackedGrass, deathDay);
 
 
-            darwinMap.setPrefWidth(finalworld.getWidth()*30);
-            darwinMap.setMaxWidth(finalworld.getWidth()*25 + 40);
-            darwinMap.setMinWidth(375);
+                dominantGenome.setVisible(false);
+                toFile.setVisible(false);
+                csvInfo.setVisible(false);
+                Region spacer0 = new Region();
+                spacer0.setPrefHeight(20);
 
-            HBox box = new HBox(darwinMap, tracking);
-            box.setAlignment(Pos.CENTER);
-            animation = new Scene(box, Math.max(finalworld.getWidth()*40+100,1100),
-                    finalworld.getHeight()*20+200);
+                VBox buttons = new VBox( dominantGenome, toFile, spacer0, csvInfo);
+                buttons.setAlignment(Pos.CENTER);
+                buttons.setSpacing(5);
 
-            window.setScene(animation);
+                Simulator finalSimulator = new Simulator(finalworld, initAnimalsNumber, startEnergy,
+                        dailyPlant, geneLength, moveEnergy, reproductionLoss, maxMutate, startGrass,
+                        this,finalSimulatorWorld,  moveEnergy, plantEnergy,
+                        daysCount,genotype, grassCount, avgEnergyCount, avgLifeTime, freeFieldsCount,
+                        trackedGenome,trackedCurrentGen, trackedOffspring,trackedDays,trackedEnergy, trackedGrass,
+                        deathDay, output,outputSum);
+
+                mapVisual(finalworld,finalSimulatorWorld);
+
+                Thread earthSimulatorThread = new Thread(finalSimulator);
+                earthSimulatorThread.start();
+                startstop.setOnAction((event3) -> {
+                    finalSimulator.switchPausing();
+                    if (finalSimulator.pausing) {
+                        this.mapPaused(finalworld, finalSimulator,finalSimulatorWorld, dominantGenome,
+                                toFile, csvInfo,false);
+                        toFile.setOnAction((event4) -> {
+                            try {
+                                exportToFile(finalSimulator.days,output);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        dominantGenome.setOnAction((event4) -> {
+                            this.mapPaused(finalworld, finalSimulator,finalSimulatorWorld, dominantGenome,
+                                    toFile, csvInfo,true);
+                        });
+                    }
+                    else {
+                        dominantGenome.setVisible(false);
+                        toFile.setVisible(false);
+                        csvInfo.setVisible(false);
+                    }
+                });
+
+
+                HBox statBox1 = new HBox(daysCount,genotype, freeFieldsCount);
+                HBox statBox2 = new HBox(grassCount,avgEnergyCount,avgLifeTime);
+                statBox1.setSpacing(15);
+                statBox2.setSpacing(15);
+                finalSimulatorWorld.setAlignment(Pos.CENTER);
+                VBox darwinMap = new VBox(finalSimulatorWorld,startstop);
+                darwinMap.setAlignment(Pos.TOP_CENTER);
+
+                Region spacer = new Region();
+                spacer.setPrefHeight(20);
+                Region spacer1 = new Region();
+                spacer1.setPrefHeight(20);
+                Region spacer2 = new Region();
+                spacer2.setPrefHeight(20);
+                Region spacer3 = new Region();
+                spacer3.setPrefHeight(20);
+                Region spacer4 = new Region();
+                spacer4.setPrefHeight(20);
+                Region spacer5 = new Region();
+                spacer5.setPrefHeight(20);
+                Region spacer6 = new Region();
+                spacer6.setPrefHeight(20);
+                Region spacer7 = new Region();
+                spacer7.setPrefHeight(20);
+
+                Separator sep = new Separator(Orientation.HORIZONTAL);
+                Separator sep1 = new Separator(Orientation.HORIZONTAL);
+                Label trackingAnimalLabel = new Label("Tracked Animal Info");
+                Font font = Font.font("Verdana", FontWeight.BOLD, 15);
+                trackingAnimalLabel.setFont(font);
+                Label statsLabel = new Label("Simulation statistics");
+                statsLabel.setFont(font);
+
+                VBox tracking = new VBox(spacer3, statsLabel, spacer5, statBox1, spacer2, statBox2, spacer6,
+                                        sep,spacer, trackingAnimalLabel, spacer1, tracking1, spacer7, sep1,
+                                     spacer4, buttons);
+
+
+                darwinMap.setPrefWidth(finalworld.getWidth()*30);
+                darwinMap.setMaxWidth(finalworld.getWidth()*25 + 40);
+                darwinMap.setMinWidth(375);
+
+                HBox box = new HBox(darwinMap, tracking);
+                box.setAlignment(Pos.CENTER);
+                animation = new Scene(box, Math.max(finalworld.getWidth()*40+100,1100),
+                        finalworld.getHeight()*20+200);
+
+                window.setScene(animation);
         });
 
 
-        VBox gameSimulation = new VBox(startBox, button);
-        gameSimulation.setAlignment(Pos.CENTER);
-        inputs = new Scene(gameSimulation, 600, 600);
+            VBox inputsLayout = new VBox(parametreBox, startBox,  button);
+            inputsLayout.setAlignment(Pos.CENTER);
+            inputs = new Scene(inputsLayout, 550, 550);
+
+            title.setScene(inputs);
+            window.show();
+
+        });
+
+        VBox inputsLayout = new VBox(root);
+        inputsLayout.setAlignment(Pos.CENTER);
+        inputs = new Scene(inputsLayout, 325, 125);
 
         primaryStage.setTitle("Darwin Simulator");
 

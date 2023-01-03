@@ -7,25 +7,16 @@
     <list default="true" id="6fe3bf71-76f2-4188-be9d-e9758feeb98c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_10.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_12.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_14.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_16.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_18.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_26.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/OUTPUTS/engine_output_on_day_8.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/AbstractWorldMap$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/AbstractWorldMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/agh/ics/oop/AbstractWorldMap.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/Animal.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/agh/ics/oop/Animal.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/Simulator.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/agh/ics/oop/Simulator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/World.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/agh/ics/oop/World.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/gui/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/agh/ics/oop/gui/App.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/agh/ics/oop/gui/GuiElementBox.class" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/agh/ics/oop/gui/GuiElementBox.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/main/parametry.txt" beforeDir="false" afterPath="$PROJECT_DIR$/bin/main/parametry.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_23.csv" beforeDir="false" afterPath="$PROJECT_DIR$/CSV/darwin_game_on_day_23.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/AbstractWorldMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/AbstractWorldMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Animal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Animal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Genotype.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Genotype.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/HellMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/HellMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/IEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/IEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/ReadFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/ReadFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Simulator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/SphereWorld.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/SphereWorld.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/gui/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/gui/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/parametry.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/parametry.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +66,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/marty/po_proj1",
+    "last_opened_file_path": "C:/Users/abc/Downloads/po_proj1",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"

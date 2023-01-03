@@ -4,11 +4,8 @@ import java.util.Random;
 
 public class HellMap extends AbstractWorldMap{
 
-    protected int teleportEnergy;
-
     public HellMap(int width, int height, int teleportEnergy) {
-        super(width, height);
-        this.teleportEnergy = teleportEnergy;
+        super(width, height, teleportEnergy);
     }
 
     public Vector2d generateRandomPosition(){

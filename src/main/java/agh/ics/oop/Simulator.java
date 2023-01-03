@@ -105,7 +105,7 @@ public class Simulator implements IEngine,Runnable {
             if (tracked){
                 Platform.runLater(() -> {
                     simulationObserver
-                            .trackedAnimalVisual(trackedAnimal,this,this.map,trackedGenome,trackedCurrentGen,
+                            .trackedAnimalVisual(trackedAnimal,this,trackedGenome,trackedCurrentGen,
                                     trackedOffspring,trackedDescendants, trackedEnergy, trackedGrass, deathDay);
                 });
             }
@@ -116,7 +116,7 @@ public class Simulator implements IEngine,Runnable {
     public synchronized void singleRun() {
 
         Platform.runLater(() -> {
-            simulationObserver.mapVisual(map,pane,this);
+            simulationObserver.mapVisual(map,pane);
             simulationObserver.statisticsVisual(this,this.map,this.daysCount,this.genome, this.grassCount,
                     this.avgEnergyCount, this.avgLifeTime, this.freeFieldsCount);
             simulationObserver.outputUpdate(map,this, output, outputSum);
@@ -311,8 +311,15 @@ public class Simulator implements IEngine,Runnable {
     }
 
     public int freeFieldsNum(){
-        int allFields = map.getHeight()*map.getWidth();
-        return allFields - map.getNumOfGrasses() - this.numOfAnimals();
+        int freeFields = 0;
+        for (int x = 0; x < map.getWidth(); x++)
+            for (int y = 0; y < map.getHeight(); y++) {
+                ArrayList<Animal> animalsAtVector = map.getAnimals().get(new Vector2d(x, y));
+                if (animalsAtVector.isEmpty())
+                    if (map.getGrasses().get(new Vector2d(x, y)) == null)
+                        freeFields++;
+            }
+        return freeFields;
     }
 
     public String dominantGenome() {
@@ -348,11 +355,5 @@ public class Simulator implements IEngine,Runnable {
 
         return result;
     }
-
-    public Integer getGenotypeInt(String g)
-    {
-        return Integer.valueOf(g);
-    }
-
 
 }

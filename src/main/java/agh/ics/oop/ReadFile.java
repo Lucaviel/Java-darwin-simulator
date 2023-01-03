@@ -11,8 +11,8 @@ public class ReadFile {
 
     private final File f;
 
-    public ReadFile(String pathname) {
-        this.f = new File(pathname);
+    public ReadFile(File selected) {
+        this.f = selected;
     }
 
     public HashMap<String, String> getParametersFromFile() {

@@ -53,9 +53,9 @@ public class Genotype{
         int numToMutate = r1.nextInt(0, maxMutate + 1); // ranodmowa liczba genów do mutacji
 
         // get random subset of size numToMutate
-        List<Integer> rangeLinkedList = new LinkedList<Integer>(rangeList);
+        List<Integer> rangeLinkedList = new LinkedList<>(rangeList);
         Collections.shuffle(rangeLinkedList);
-        Set<Integer> indexesToMutate = new HashSet<Integer>(rangeLinkedList.subList(0, numToMutate));
+        Set<Integer> indexesToMutate = new HashSet<>(rangeLinkedList.subList(0, numToMutate));
 
         Iterator<Integer> indexesIterator = indexesToMutate.iterator();
 

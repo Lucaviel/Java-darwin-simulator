@@ -2,8 +2,8 @@ package agh.ics.oop;
 
 public class SphereWorld extends AbstractWorldMap {
 
-    public SphereWorld(int width, int height) {
-        super(width, height);
+    public SphereWorld(int width, int height, int teleportEnergy) {
+        super(width, height, teleportEnergy);
     }
     public void moveTo(Animal pet) {
         if (pet.position.y < 0 || pet.position.y >= height) {

@@ -8,21 +8,23 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
 
     protected int width;
     protected int height;
+    protected int teleportEnergy;
     protected Vector2d lowerLeft;
     protected Vector2d upperRight;
     protected Map<Vector2d, ArrayList<Animal>> animals = new LinkedHashMap<>();
     protected Map<Vector2d, Grass> grasses = new LinkedHashMap<>();
 
 
-    public AbstractWorldMap(int width, int height){
+    public AbstractWorldMap(int width, int height, int teleportEnergy){
         this.width = width;
         this.height = height;
+        this.teleportEnergy = teleportEnergy;
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width-1, height-1);
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
             {
-                animals.put(new Vector2d(x, y), new ArrayList<Animal>());
+                animals.put(new Vector2d(x, y), new ArrayList<>());
             }
     }
 
@@ -95,9 +97,7 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
     }
 
     public boolean isOccupiedByGrass(Vector2d position) {
-        if (grasses.containsKey(position))
-            return true;
-        return false;
+        return grasses.containsKey(position);
     }
 
     public void addGrass(Vector2d position){
