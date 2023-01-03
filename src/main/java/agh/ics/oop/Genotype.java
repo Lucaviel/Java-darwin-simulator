@@ -57,10 +57,7 @@ public class Genotype{
         Collections.shuffle(rangeLinkedList);
         Set<Integer> indexesToMutate = new HashSet<>(rangeLinkedList.subList(0, numToMutate));
 
-        Iterator<Integer> indexesIterator = indexesToMutate.iterator();
-
-        while(indexesIterator.hasNext()) {
-            Integer indexToMutate = indexesIterator.next();
+        for (Integer indexToMutate : indexesToMutate) {
             Random r2 = new Random();
             int newGene = r2.nextInt(0, geneLength);
             genotypeArray.set(indexToMutate, newGene);

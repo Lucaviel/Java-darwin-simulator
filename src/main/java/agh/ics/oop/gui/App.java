@@ -21,8 +21,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.testng.Assert.assertTrue;
 
@@ -75,20 +73,20 @@ public class App extends Application{
     Button dominantGenome = new Button("Show animals with dominant genome");
     Button toFile = new Button("Generate CSV file of daily stats");
     ArrayList<String[]> output = new ArrayList<>();
-    int[] outputSum = {0,0,0,0,0,0};
+    int[] averageOut = {0,0,0,0,0,0};
     protected final static int SIZE = 25;
 
-    public void outputUpdate(IWorldMap map, Simulator engine,ArrayList<String[]> output,int[] outputSum){
+    public void outputUpdate(IWorldMap map, Simulator engine,ArrayList<String[]> output,int[] averageOut){
         String[] dailyOutput = {String.valueOf(engine.days),
                 String.valueOf(engine.numOfAnimals()),String.valueOf(map.getNumOfGrasses()),
-                String.valueOf(engine.avgEnergy()),String.valueOf(engine.getAvgLifeSpan()),
-                String.valueOf(engine.freeFieldsNum()), engine.dominantGenome()};
+                String.valueOf(engine.stat.avgEnergy()),String.valueOf(engine.stat.getAvgLifeSpan()),
+                String.valueOf(engine.stat.freeFieldsNum()), engine.stat.dominantGenome()};
 
-        outputSum[1]=outputSum[1]+engine.numOfAnimals();
-        outputSum[2]=outputSum[2]+map.getNumOfGrasses();
-        outputSum[3]=outputSum[3]+engine.avgEnergy();
-        outputSum[4]=outputSum[4]+engine.getAvgLifeSpan();
-        outputSum[5]=outputSum[5]+engine.freeFieldsNum();
+        averageOut[1]=averageOut[1]+engine.numOfAnimals();
+        averageOut[2]=averageOut[2]+map.getNumOfGrasses();
+        averageOut[3]=averageOut[3]+engine.stat.avgEnergy();
+        averageOut[4]=averageOut[4]+engine.stat.getAvgLifeSpan();
+        averageOut[5]=averageOut[5]+engine.stat.freeFieldsNum();
 
         output.add(dailyOutput);
     }
@@ -96,11 +94,11 @@ public class App extends Application{
     public void statisticsVisual(Simulator engine,IWorldMap map, Label daysCount,Label genotype, Label grassCount,
                                  Label avgEnergyCount, Label avgLifeTime, Label freeFieldsCount){
         daysCount.setText("Day: " + engine.days);
-        genotype.setText("Dominant genotype: " + engine.dominantGenome());
-        freeFieldsCount.setText("Free fields: " + engine.freeFieldsNum());
+        genotype.setText("Dominant genotype: " + engine.stat.dominantGenome());
+        freeFieldsCount.setText("Free fields: " + engine.stat.freeFieldsNum());
         grassCount.setText("Grass: " + map.getNumOfGrasses());
-        avgEnergyCount.setText("Average energy: " + engine.avgEnergy());
-        avgLifeTime.setText("Average life in days: " + engine.getAvgLifeSpan());
+        avgEnergyCount.setText("Average energy: " + engine.stat.avgEnergy());
+        avgLifeTime.setText("Average life in days: " + engine.stat.getAvgLifeSpan());
     }
 
     public void trackedAnimalVisual(Animal animal,Simulator engine,Label trackedGenome,
@@ -199,7 +197,7 @@ public class App extends Application{
                     }
 
                     if (map.objectAt(new Vector2d(x,y)) instanceof Animal) {
-                        if (engine.animalsWithDominantGenome().contains(((Animal) map.objectAt(new Vector2d(x, y))))
+                        if (engine.stat.animalsWithDominantGenome().contains(((Animal) map.objectAt(new Vector2d(x, y))))
                                 && show)
                             Box = new GuiElementBox(45, imgDominantAnimal);
                     }
@@ -229,7 +227,7 @@ public class App extends Application{
     }
 
     public String toCSV(String[] output) {
-        return Stream.of(output).collect(Collectors.joining(";"));
+        return String.join(";", output);
     }
 
     public void exportToFile(int day, ArrayList<String[]> thisOutput) throws IOException {
@@ -394,7 +392,7 @@ public class App extends Application{
                         this,finalSimulatorWorld,  moveEnergy, plantEnergy,
                         daysCount,genotype, grassCount, avgEnergyCount, avgLifeTime, freeFieldsCount,
                         trackedGenome,trackedCurrentGen, trackedOffspring,trackedDays,trackedEnergy, trackedGrass,
-                        deathDay, output,outputSum);
+                        deathDay, output,averageOut);
 
                 mapVisual(finalworld,finalSimulatorWorld);
 

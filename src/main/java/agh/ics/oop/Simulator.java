@@ -8,7 +8,7 @@ import javafx.scene.layout.GridPane;
 import java.util.*;
 
 public class Simulator implements IEngine,Runnable {
-    public int[] outputSum;
+    public int[] averageOut;
     public int days = 0;
     public boolean pausing = false;
     protected int startAnimals;
@@ -26,8 +26,8 @@ public class Simulator implements IEngine,Runnable {
     protected IWorldMap map;
     protected int startGrass;
     protected int plantEnergy;
-    private int deadAnimalsNum = 0;
-    private int summedLifeSpan = 0;
+    public int deadAnimalsNum = 0;
+    public int summedLifeSpan = 0;
     private Animal trackedAnimal;
     public boolean tracked = false;
     protected App simulationObserver;
@@ -47,13 +47,14 @@ public class Simulator implements IEngine,Runnable {
     Label trackedGrass;
     Label deathDay;
     ArrayList<String[]> output;
+    public Statistics stat;
 
     public Simulator(IWorldMap map, int startAnimals, int startEnergy, int numGrass, int geneLength,
                      int dailyLossEnergy, int reproductionEnergy, int maxMutate, int startGrass,
                      App simulationObserver, GridPane pane, int moveEnergy, int plantEnergy,
                      Label daysCount, Label genome, Label freeFieldsCount, Label grassCount, Label avgEnergyCount, Label avgLifeTime,
                      Label trackedGenome, Label trackedCurrentGen, Label trackedOffspring, Label trackedDescendants,
-                     Label trackedEnergy,  Label trackedGrass,Label deathDay, ArrayList<String[]> output, int[] outputSum) {
+                     Label trackedEnergy,  Label trackedGrass,Label deathDay, ArrayList<String[]> output, int[] averageOut) {
         this.startAnimals = startAnimals;
         this.startEnergy = startEnergy;
         this.simulationObserver = simulationObserver;
@@ -84,7 +85,8 @@ public class Simulator implements IEngine,Runnable {
         this.trackedGrass = trackedGrass;
         this.deathDay = deathDay;
         this.output = output;
-        this.outputSum = outputSum;
+        this.averageOut = averageOut;
+        this.stat = new Statistics(this);
         addRandomAnimals(map, startAnimals);
         addRandomGrass(startGrass);
     }
@@ -119,7 +121,7 @@ public class Simulator implements IEngine,Runnable {
             simulationObserver.mapVisual(map,pane);
             simulationObserver.statisticsVisual(this,this.map,this.daysCount,this.genome, this.grassCount,
                     this.avgEnergyCount, this.avgLifeTime, this.freeFieldsCount);
-            simulationObserver.outputUpdate(map,this, output, outputSum);
+            simulationObserver.outputUpdate(map,this, output, averageOut);
         });
 
         deleteAnimals();
@@ -167,11 +169,6 @@ public class Simulator implements IEngine,Runnable {
                 i++;
             }
         }
-    }
-
-    public void addSpecificAnimal(Animal animal) {
-        this.animals.add(animal);
-        this.map.place(animal);
     }
 
     private void newBornAnimal(Animal parent1, Animal parent2) {
@@ -298,62 +295,8 @@ public class Simulator implements IEngine,Runnable {
         else upEquatorGrass.add(new Vector2d(x, y));
     }
 
-    public int avgEnergy() {
-        int sum = 0;
-        for (Animal animal : animals) sum = sum + animal.getEnergy();
-        if (numOfAnimals() == 0) return 0;
-        return sum / numOfAnimals();
-    }
-
-    public int getAvgLifeSpan() {
-        if (deadAnimalsNum == 0) return 0;
-        return summedLifeSpan / deadAnimalsNum;
-    }
-
-    public int freeFieldsNum(){
-        int freeFields = 0;
-        for (int x = 0; x < map.getWidth(); x++)
-            for (int y = 0; y < map.getHeight(); y++) {
-                ArrayList<Animal> animalsAtVector = map.getAnimals().get(new Vector2d(x, y));
-                if (animalsAtVector.isEmpty())
-                    if (map.getGrasses().get(new Vector2d(x, y)) == null)
-                        freeFields++;
-            }
-        return freeFields;
-    }
-
-    public String dominantGenome() {
-        if (animalsWithDominantGenome() == null) return "";
-        if (animalsWithDominantGenome().size() == 0) return "";
-        String result = animalsWithDominantGenome().get(0).getGenotype().toString();
-        return result.replaceAll(",", "").replaceAll(" ", "");
-    }
-
-    public ArrayList<Animal> animalsWithDominantGenome() {
-        Map<ArrayList<Integer>, Integer> genotypes = new LinkedHashMap<>();
-        for (Animal animal : animals) {
-            if (genotypes.get(animal.getGenotype()) != null) {
-                int i = genotypes.get(animal.getGenotype());
-                genotypes.remove(animal.getGenotype());
-                genotypes.put(animal.getGenotype(), i + 1);
-            } else genotypes.put(animal.getGenotype(), 1);
-        }
-        int val = 0;
-        ArrayList<Integer> genome = new ArrayList<>();
-        ArrayList<Animal> result = new ArrayList<>();
-
-        for (Map.Entry<ArrayList<Integer>, Integer> el : genotypes.entrySet()) {
-            if (el.getValue() > val) {
-                genome = el.getKey();
-                val = el.getValue();
-            }
-        }
-
-        for (Animal animal : animals) {
-            if (animal.getGenotype().equals(genome)) result.add(animal);
-        }
-
-        return result;
+    public List<Animal> getSymAnimals(){
+        return this.animals;
     }
 
 }
