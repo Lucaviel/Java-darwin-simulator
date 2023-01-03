@@ -5,23 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6fe3bf71-76f2-4188-be9d-e9758feeb98c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/agh/ics/oop/Grass.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/agh/ics/oop/Grass.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/agh/ics/oop/Simulator.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/agh/ics/oop/Simulator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/agh/ics/oop/gui/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/agh/ics/oop/gui/App.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Genotype.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Genotype.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Grass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Grass.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/World.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/agh/ics/oop/gui/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/agh/ics/oop/gui/App.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_11.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_15.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_17.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_18.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_19.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_20.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_21.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_23.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_24.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_25.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_26.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_27.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_28.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_31.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_36.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_40.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_42.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_44.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_48.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_56.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_58.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_69.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_80.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_84.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSV/darwin_game_on_day_86.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/scp.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,8 +122,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.App" />
         <item itemvalue="Application.World" />
+        <item itemvalue="Application.App" />
       </list>
     </recent_temporary>
   </component>
